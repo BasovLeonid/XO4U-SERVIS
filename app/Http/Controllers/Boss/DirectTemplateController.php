@@ -45,7 +45,9 @@ class DirectTemplateController extends Controller
     public function edit(DirectTemplate $direct_template)
     {
         $template = $direct_template->load('campaigns');
-        return view('boss.direct-templates.edit', compact('template'));
+        $counters = []; // Загрузка счетчиков
+        $goals = []; // Загрузка целей
+        return view('boss.direct-templates.edit', compact('template', 'counters', 'goals'));
     }
 
     public function update(Request $request, DirectTemplate $direct_template)
@@ -74,6 +76,11 @@ class DirectTemplateController extends Controller
 
     public function destroy(DirectTemplate $direct_template)
     {
+        if ($direct_template->campaigns()->exists()) {
+            return redirect()->route('boss.direct-templates.index')
+                ->with('error', 'Невозможно удалить шаблон, так как в нем есть кампании. Сначала удалите все кампании.');
+        }
+
         if ($direct_template->image) {
             Storage::disk('public')->delete($direct_template->image);
         }

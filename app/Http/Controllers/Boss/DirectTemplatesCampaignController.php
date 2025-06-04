@@ -11,7 +11,11 @@ class DirectTemplatesCampaignController extends Controller
 {
     public function create(DirectTemplate $template)
     {
-        return view('boss.direct-templates.campaigns.create', compact('template'));
+        // Здесь можно добавить загрузку счетчиков и целей из Яндекс.Метрики
+        $counters = []; // Загрузка счетчиков
+        $goals = []; // Загрузка целей
+
+        return view('boss.direct-templates.campaigns.create', compact('template', 'counters', 'goals'));
     }
 
     public function store(Request $request, DirectTemplate $template)
@@ -33,12 +37,40 @@ class DirectTemplatesCampaignController extends Controller
             'average_cpa' => 'nullable|numeric|min:0',
             'average_crr' => 'nullable|numeric|min:0|max:100',
             'cpa' => 'nullable|numeric|min:0',
-            'crr' => 'nullable|numeric|min:0|max:100'
+            'crr' => 'nullable|numeric|min:0|max:100',
+            // Дополнительные настройки
+            'time_targeting_schedule' => 'nullable|array',
+            'time_targeting_schedule.*' => 'in:monday,tuesday,wednesday,thursday,friday,saturday,sunday',
+            'consider_working_weekends' => 'nullable|in:YES,NO',
+            'tracking_params' => 'nullable|string',
+            'sms_settings' => 'nullable|array',
+            'sms_settings.events' => 'nullable|array',
+            'sms_settings.events.*' => 'in:CAMPAIGN_STOPPED,CAMPAIGN_ENDED',
+            'email_settings' => 'nullable|array',
+            'email_settings.events' => 'nullable|array',
+            'email_settings.events.*' => 'in:CAMPAIGN_STOPPED,CAMPAIGN_ENDED',
+            'negative_keywords' => 'nullable|array',
+            'negative_keywords.*' => 'string',
+            'blocked_ips' => 'nullable|array',
+            'blocked_ips.*' => 'ip',
+            'excluded_sites' => 'nullable|array',
+            'excluded_sites.*' => 'url'
         ]);
+
+        // Обработка списков
+        if (isset($validated['negative_keywords'])) {
+            $validated['negative_keywords'] = array_filter(explode("\n", $validated['negative_keywords'][0]));
+        }
+        if (isset($validated['blocked_ips'])) {
+            $validated['blocked_ips'] = array_filter(explode("\n", $validated['blocked_ips'][0]));
+        }
+        if (isset($validated['excluded_sites'])) {
+            $validated['excluded_sites'] = array_filter(explode("\n", $validated['excluded_sites'][0]));
+        }
 
         $campaign = $template->campaigns()->create($validated);
 
-        return redirect()->route('boss.direct-templates.edit', $template)
+        return redirect()->route('boss.direct-templates.campaigns.settings', [$template, $campaign])
             ->with('success', 'Кампания успешно создана');
     }
 
@@ -70,12 +102,40 @@ class DirectTemplatesCampaignController extends Controller
             'average_cpa' => 'nullable|numeric|min:0',
             'average_crr' => 'nullable|numeric|min:0|max:100',
             'cpa' => 'nullable|numeric|min:0',
-            'crr' => 'nullable|numeric|min:0|max:100'
+            'crr' => 'nullable|numeric|min:0|max:100',
+            // Дополнительные настройки
+            'time_targeting_schedule' => 'nullable|array',
+            'time_targeting_schedule.*' => 'in:monday,tuesday,wednesday,thursday,friday,saturday,sunday',
+            'consider_working_weekends' => 'nullable|in:YES,NO',
+            'tracking_params' => 'nullable|string',
+            'sms_settings' => 'nullable|array',
+            'sms_settings.events' => 'nullable|array',
+            'sms_settings.events.*' => 'in:CAMPAIGN_STOPPED,CAMPAIGN_ENDED',
+            'email_settings' => 'nullable|array',
+            'email_settings.events' => 'nullable|array',
+            'email_settings.events.*' => 'in:CAMPAIGN_STOPPED,CAMPAIGN_ENDED',
+            'negative_keywords' => 'nullable|array',
+            'negative_keywords.*' => 'string',
+            'blocked_ips' => 'nullable|array',
+            'blocked_ips.*' => 'ip',
+            'excluded_sites' => 'nullable|array',
+            'excluded_sites.*' => 'url'
         ]);
+
+        // Обработка списков
+        if (isset($validated['negative_keywords'])) {
+            $validated['negative_keywords'] = array_filter(explode("\n", $validated['negative_keywords'][0]));
+        }
+        if (isset($validated['blocked_ips'])) {
+            $validated['blocked_ips'] = array_filter(explode("\n", $validated['blocked_ips'][0]));
+        }
+        if (isset($validated['excluded_sites'])) {
+            $validated['excluded_sites'] = array_filter(explode("\n", $validated['excluded_sites'][0]));
+        }
 
         $campaign->update($validated);
 
-        return redirect()->route('boss.direct-templates.edit', $template)
+        return redirect()->route('boss.direct-templates.campaigns.settings', [$template, $campaign])
             ->with('success', 'Кампания успешно обновлена');
     }
 

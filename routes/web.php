@@ -71,6 +71,7 @@ Route::middleware(['auth', 'verified'])->prefix('boss')->name('boss.')->group(fu
             Route::get('create', [DirectTemplatesCampaignController::class, 'create'])->name('create');
             Route::post('/', [DirectTemplatesCampaignController::class, 'store'])->name('store');
             Route::get('{campaign}/settings', [DirectTemplatesCampaignController::class, 'settings'])->name('settings');
+            Route::get('{campaign}/edit', [DirectTemplatesCampaignController::class, 'edit'])->name('edit');
             Route::put('{campaign}', [DirectTemplatesCampaignController::class, 'update'])->name('update');
             Route::delete('{campaign}', [DirectTemplatesCampaignController::class, 'destroy'])->name('destroy');
             Route::get('{campaign}/limits', [DirectTemplatesCampaignController::class, 'limits'])->name('limits');
@@ -101,4 +102,25 @@ Route::middleware(['auth', 'verified'])->prefix('boss')->name('boss.')->group(fu
     // Лог ошибок
     Route::get('/logs', [LogController::class, 'index'])->name('logs.index');
     Route::get('/logs/{log}', [LogController::class, 'show'])->name('logs.show');
+});
+
+Route::prefix('boss/direct-templates')->name('boss.direct-templates.')->group(function () {
+    Route::get('/', [DirectTemplateController::class, 'index'])->name('index');
+    Route::get('/create', [DirectTemplateController::class, 'create'])->name('create');
+    Route::post('/', [DirectTemplateController::class, 'store'])->name('store');
+    Route::get('/{template}/edit', [DirectTemplateController::class, 'edit'])->name('edit');
+    Route::put('/{template}', [DirectTemplateController::class, 'update'])->name('update');
+    Route::delete('/{template}', [DirectTemplateController::class, 'destroy'])->name('destroy');
+
+    // Маршруты для кампаний
+    Route::prefix('{template}/campaigns')->name('campaigns.')->group(function () {
+        Route::get('/create', [DirectTemplatesCampaignController::class, 'create'])->name('create');
+        Route::post('/', [DirectTemplatesCampaignController::class, 'store'])->name('store');
+        Route::get('/{campaign}/edit', [DirectTemplatesCampaignController::class, 'edit'])->name('edit');
+        Route::put('/{campaign}', [DirectTemplatesCampaignController::class, 'update'])->name('update');
+        Route::delete('/{campaign}', [DirectTemplatesCampaignController::class, 'destroy'])->name('destroy');
+        Route::get('/{campaign}/settings', [DirectTemplatesCampaignController::class, 'settings'])->name('settings');
+        Route::get('/{campaign}/additional-settings', [DirectTemplatesCampaignController::class, 'additionalSettings'])->name('additional-settings');
+        Route::get('/{campaign}/limits', [DirectTemplatesCampaignController::class, 'limits'])->name('limits');
+    });
 });

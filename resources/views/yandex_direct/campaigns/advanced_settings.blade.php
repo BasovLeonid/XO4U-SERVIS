@@ -75,94 +75,34 @@
         <h5 class="card-title mb-0">Стратегия</h5>
     </div>
     <div class="card-body">
-        <div class="form-group mb-3">
-            <label for="strategy_type">Тип стратегии</label>
-            <select class="form-select @error('strategy_type') is-invalid @enderror" 
-                    id="strategy_type" name="strategy_type">
-                <option value="">Выберите стратегию</option>
-                <option value="WB_MAXIMUM_CLICKS">Максимум кликов / Оплата за клики</option>
-                <option value="WB_MAXIMUM_CONVERSIONS">Максимум конверсий</option>
-                <option value="AVERAGE_CPC" class="search-only">Максимум кликов с ручными ставками / Оплата за клики</option>
-            </select>
-            @error('strategy_type')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
-
-        <!-- Параметры стратегии -->
-        <div id="strategy_params" style="display: none;">
-            <!-- Общие параметры -->
-            <div class="form-group mb-3">
-                <label for="weekly_spend_limit">Лимит расходов в неделю (руб.)</label>
-                <input type="number" class="form-control" 
-                       id="weekly_spend_limit" name="weekly_spend_limit" 
-                       step="0.01" min="0">
-            </div>
-
-            <!-- Специфические параметры -->
-            <div id="strategy_specific_params"></div>
-        </div>
-    </div>
-</div>
-
-<div class="card mb-4">
-    <div class="card-header bg-light">
-        <h5 class="card-title mb-0">Цели Яндекс Метрики</h5>
-    </div>
-    <div class="card-body">
-        <div class="form-group mb-3">
-            <label for="counter_ids">Счетчики Яндекс.Метрики</label>
-            <select class="form-select" id="counter_ids" name="counter_ids[]" multiple>
-                @foreach($counters as $counter)
-                    <option value="{{ $counter->id }}" 
-                        {{ in_array($counter->id, old('counter_ids', $campaign?->counter_ids ?? [])) ? 'selected' : '' }}>
-                        {{ $counter->name }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
-
-        <div class="form-group mb-3">
-            <label for="goals">Цели</label>
-            <select class="form-select" id="goals" name="goals[]" multiple>
-                @foreach($goals as $goal)
-                    <option value="{{ $goal->id }}"
-                        {{ in_array($goal->id, old('goals', $campaign?->goals ?? [])) ? 'selected' : '' }}>
-                        {{ $goal->name }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
-    </div>
-</div>
-
-<div class="card mb-4">
-    <div class="card-header bg-light">
-        <h5 class="card-title mb-0">Стратегии показа (API)</h5>
-    </div>
-    <div class="card-body">
         <!-- Стратегии для поиска -->
-        <div class="mb-4">
+        <div id="search_strategy_block" class="mb-4" style="display: none;">
             <h6 class="mb-3">Стратегии для поиска</h6>
             <div class="form-group mb-3">
                 <label for="search_strategy_type">Тип стратегии</label>
                 <select class="form-select" id="search_strategy_type" name="search_strategy_type">
-                    <option value="WB_MAXIMUM_CLICKS">Оптимизация кликов</option>
-                    <option value="WB_MAXIMUM_CONVERSION_RATE">Оптимизация конверсий</option>
-                    <option value="AVERAGE_CPC">Средняя цена клика</option>
-                    <option value="AVERAGE_CPA">Средняя цена конверсии</option>
-                    <option value="AVERAGE_CRR">Средняя доля расходов</option>
-                    <option value="HIGHEST_POSITION">Максимальная позиция</option>
+                    <option value="">Выберите стратегию</option>
+                    <option value="HIGHEST_POSITION">Максимум кликов с ручными ставками</option>
+                    <option value="WB_MAXIMUM_CLICKS">Максимум кликов</option>
+                    <option value="AVERAGE_CPC">Максимум кликов по средней цене</option>
+                    <option value="WB_MAXIMUM_CONVERSION_RATE">Максимум конверсий</option>
+                    <option value="AVERAGE_CPA">Максимум конверсий по средней цене</option>
                     <option value="PAY_FOR_CONVERSION">Оплата за конверсии</option>
-                    <option value="PAY_FOR_CONVERSION_CRR">Оплата за конверсии с долей расходов</option>
-                    <option value="SERVING_OFF">Отключить показы</option>
                 </select>
             </div>
 
             <!-- Параметры стратегии для поиска -->
             <div id="search_strategy_params">
+                <!-- HIGHEST_POSITION -->
+                <div class="strategy-params" data-strategy="HIGHEST_POSITION" style="display: none;">
+                    <div class="form-group mb-3">
+                        <label for="search_daily_budget">Дневной бюджет (руб.)</label>
+                        <input type="number" class="form-control" id="search_daily_budget" name="search_daily_budget" step="0.01" min="0">
+                    </div>
+                </div>
+
                 <!-- WB_MAXIMUM_CLICKS -->
-                <div class="strategy-params" data-strategy="WB_MAXIMUM_CLICKS">
+                <div class="strategy-params" data-strategy="WB_MAXIMUM_CLICKS" style="display: none;">
                     <div class="form-group mb-3">
                         <label for="search_weekly_spend_limit">Недельный бюджет (руб.)</label>
                         <input type="number" class="form-control" id="search_weekly_spend_limit" name="search_weekly_spend_limit" step="0.01" min="0">
@@ -185,6 +125,26 @@
                     </div>
                 </div>
 
+                <!-- WB_MAXIMUM_CONVERSION_RATE -->
+                <div class="strategy-params" data-strategy="WB_MAXIMUM_CONVERSION_RATE" style="display: none;">
+                    <div class="form-group mb-3">
+                        <label for="search_weekly_spend_limit_conv">Недельный бюджет (руб.)</label>
+                        <input type="number" class="form-control" id="search_weekly_spend_limit_conv" name="search_weekly_spend_limit_conv" step="0.01" min="0">
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="search_bid_ceiling_conv">Максимальная ставка (руб.)</label>
+                        <input type="number" class="form-control" id="search_bid_ceiling_conv" name="search_bid_ceiling_conv" step="0.01" min="0">
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="search_goal_id_conv">ID цели</label>
+                        <select class="form-select" id="search_goal_id_conv" name="search_goal_id_conv">
+                            @foreach($goals as $goal)
+                                <option value="{{ $goal->id }}">{{ $goal->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
                 <!-- AVERAGE_CPA -->
                 <div class="strategy-params" data-strategy="AVERAGE_CPA" style="display: none;">
                     <div class="form-group mb-3">
@@ -192,75 +152,48 @@
                         <input type="number" class="form-control" id="search_average_cpa" name="search_average_cpa" step="0.01" min="0">
                     </div>
                     <div class="form-group mb-3">
-                        <label for="search_goal_id_cpa">ID цели</label>
-                        <select class="form-select" id="search_goal_id_cpa" name="search_goal_id_cpa">
-                            @foreach($goals as $goal)
-                                <option value="{{ $goal->id }}">{{ $goal->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="form-group mb-3">
                         <label for="search_weekly_spend_limit_cpa">Недельный бюджет (руб.)</label>
                         <input type="number" class="form-control" id="search_weekly_spend_limit_cpa" name="search_weekly_spend_limit_cpa" step="0.01" min="0">
                     </div>
-                </div>
-
-                <!-- AVERAGE_CRR -->
-                <div class="strategy-params" data-strategy="AVERAGE_CRR" style="display: none;">
                     <div class="form-group mb-3">
-                        <label for="search_crr">Средняя доля расходов (%)</label>
-                        <input type="number" class="form-control" id="search_crr" name="search_crr" step="0.01" min="0" max="100">
+                        <label for="search_bid_ceiling_cpa">Максимальная ставка (руб.)</label>
+                        <input type="number" class="form-control" id="search_bid_ceiling_cpa" name="search_bid_ceiling_cpa" step="0.01" min="0">
                     </div>
                     <div class="form-group mb-3">
-                        <label for="search_goal_id_crr">ID цели</label>
-                        <select class="form-select" id="search_goal_id_crr" name="search_goal_id_crr">
-                            @foreach($goals as $goal)
-                                <option value="{{ $goal->id }}">{{ $goal->name }}</option>
-                            @endforeach
-                        </select>
+                        <label for="search_exploration_budget">Минимальный бюджет (руб.)</label>
+                        <input type="number" class="form-control" id="search_exploration_budget" name="search_exploration_budget" step="0.01" min="0">
                     </div>
                 </div>
 
                 <!-- PAY_FOR_CONVERSION -->
                 <div class="strategy-params" data-strategy="PAY_FOR_CONVERSION" style="display: none;">
                     <div class="form-group mb-3">
-                        <label for="search_cpa">Цена конверсии (руб.)</label>
-                        <input type="number" class="form-control" id="search_cpa" name="search_cpa" step="0.01" min="0">
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="search_goal_id_pfc">ID цели</label>
-                        <select class="form-select" id="search_goal_id_pfc" name="search_goal_id_pfc">
-                            @foreach($goals as $goal)
-                                <option value="{{ $goal->id }}">{{ $goal->name }}</option>
-                            @endforeach
-                        </select>
+                        <label for="search_weekly_spend_limit_pfc">Недельный бюджет (руб.)</label>
+                        <input type="number" class="form-control" id="search_weekly_spend_limit_pfc" name="search_weekly_spend_limit_pfc" step="0.01" min="0">
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Стратегии для сетей -->
-        <div class="mb-4">
+        <div id="network_strategy_block" class="mb-4" style="display: none;">
             <h6 class="mb-3">Стратегии для сетей</h6>
             <div class="form-group mb-3">
                 <label for="network_strategy_type">Тип стратегии</label>
                 <select class="form-select" id="network_strategy_type" name="network_strategy_type">
-                    <option value="NETWORK_DEFAULT">По умолчанию</option>
-                    <option value="WB_MAXIMUM_CLICKS">Оптимизация кликов</option>
-                    <option value="WB_MAXIMUM_CONVERSION_RATE">Оптимизация конверсий</option>
-                    <option value="AVERAGE_CPC">Средняя цена клика</option>
-                    <option value="AVERAGE_CPA">Средняя цена конверсии</option>
-                    <option value="AVERAGE_CRR">Средняя доля расходов</option>
+                    <option value="">Выберите стратегию</option>
+                    <option value="WB_MAXIMUM_CLICKS">Максимум кликов</option>
+                    <option value="AVERAGE_CPC">Максимум кликов по средней цене</option>
+                    <option value="WB_MAXIMUM_CONVERSION_RATE">Максимум конверсий</option>
+                    <option value="AVERAGE_CPA">Максимум конверсий по средней цене</option>
                     <option value="PAY_FOR_CONVERSION">Оплата за конверсии</option>
-                    <option value="PAY_FOR_CONVERSION_CRR">Оплата за конверсии с долей расходов</option>
-                    <option value="SERVING_OFF">Отключить показы</option>
                 </select>
             </div>
 
             <!-- Параметры стратегии для сетей -->
             <div id="network_strategy_params">
                 <!-- WB_MAXIMUM_CLICKS -->
-                <div class="strategy-params" data-strategy="WB_MAXIMUM_CLICKS">
+                <div class="strategy-params" data-strategy="WB_MAXIMUM_CLICKS" style="display: none;">
                     <div class="form-group mb-3">
                         <label for="network_weekly_spend_limit">Недельный бюджет (руб.)</label>
                         <input type="number" class="form-control" id="network_weekly_spend_limit" name="network_weekly_spend_limit" step="0.01" min="0">
@@ -283,6 +216,26 @@
                     </div>
                 </div>
 
+                <!-- WB_MAXIMUM_CONVERSION_RATE -->
+                <div class="strategy-params" data-strategy="WB_MAXIMUM_CONVERSION_RATE" style="display: none;">
+                    <div class="form-group mb-3">
+                        <label for="network_weekly_spend_limit_conv">Недельный бюджет (руб.)</label>
+                        <input type="number" class="form-control" id="network_weekly_spend_limit_conv" name="network_weekly_spend_limit_conv" step="0.01" min="0">
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="network_bid_ceiling_conv">Максимальная ставка (руб.)</label>
+                        <input type="number" class="form-control" id="network_bid_ceiling_conv" name="network_bid_ceiling_conv" step="0.01" min="0">
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="network_goal_id_conv">ID цели</label>
+                        <select class="form-select" id="network_goal_id_conv" name="network_goal_id_conv">
+                            @foreach($goals as $goal)
+                                <option value="{{ $goal->id }}">{{ $goal->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
                 <!-- AVERAGE_CPA -->
                 <div class="strategy-params" data-strategy="AVERAGE_CPA" style="display: none;">
                     <div class="form-group mb-3">
@@ -290,51 +243,52 @@
                         <input type="number" class="form-control" id="network_average_cpa" name="network_average_cpa" step="0.01" min="0">
                     </div>
                     <div class="form-group mb-3">
-                        <label for="network_goal_id_cpa">ID цели</label>
-                        <select class="form-select" id="network_goal_id_cpa" name="network_goal_id_cpa">
-                            @foreach($goals as $goal)
-                                <option value="{{ $goal->id }}">{{ $goal->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="form-group mb-3">
                         <label for="network_weekly_spend_limit_cpa">Недельный бюджет (руб.)</label>
                         <input type="number" class="form-control" id="network_weekly_spend_limit_cpa" name="network_weekly_spend_limit_cpa" step="0.01" min="0">
                     </div>
-                </div>
-
-                <!-- AVERAGE_CRR -->
-                <div class="strategy-params" data-strategy="AVERAGE_CRR" style="display: none;">
                     <div class="form-group mb-3">
-                        <label for="network_crr">Средняя доля расходов (%)</label>
-                        <input type="number" class="form-control" id="network_crr" name="network_crr" step="0.01" min="0" max="100">
+                        <label for="network_bid_ceiling_cpa">Максимальная ставка (руб.)</label>
+                        <input type="number" class="form-control" id="network_bid_ceiling_cpa" name="network_bid_ceiling_cpa" step="0.01" min="0">
                     </div>
                     <div class="form-group mb-3">
-                        <label for="network_goal_id_crr">ID цели</label>
-                        <select class="form-select" id="network_goal_id_crr" name="network_goal_id_crr">
-                            @foreach($goals as $goal)
-                                <option value="{{ $goal->id }}">{{ $goal->name }}</option>
-                            @endforeach
-                        </select>
+                        <label for="network_exploration_budget">Минимальный бюджет (руб.)</label>
+                        <input type="number" class="form-control" id="network_exploration_budget" name="network_exploration_budget" step="0.01" min="0">
                     </div>
                 </div>
 
                 <!-- PAY_FOR_CONVERSION -->
                 <div class="strategy-params" data-strategy="PAY_FOR_CONVERSION" style="display: none;">
                     <div class="form-group mb-3">
-                        <label for="network_cpa">Цена конверсии (руб.)</label>
-                        <input type="number" class="form-control" id="network_cpa" name="network_cpa" step="0.01" min="0">
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="network_goal_id_pfc">ID цели</label>
-                        <select class="form-select" id="network_goal_id_pfc" name="network_goal_id_pfc">
-                            @foreach($goals as $goal)
-                                <option value="{{ $goal->id }}">{{ $goal->name }}</option>
-                            @endforeach
-                        </select>
+                        <label for="network_weekly_spend_limit_pfc">Недельный бюджет (руб.)</label>
+                        <input type="number" class="form-control" id="network_weekly_spend_limit_pfc" name="network_weekly_spend_limit_pfc" step="0.01" min="0">
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header bg-light">
+        <h5 class="card-title mb-0">Цели Яндекс Метрики</h5>
+    </div>
+    <div class="card-body">
+        <div class="form-group mb-3">
+            <label for="counter_ids">ID счетчиков Яндекс.Метрики</label>
+            <input type="text" class="form-control" id="counter_ids" name="counter_ids" 
+                   placeholder="Введите ID счетчиков через запятую" 
+                   value="{{ old('counter_ids', $campaign?->counter_ids ? implode(',', $campaign->counter_ids) : '') }}">
+            <small class="form-text text-muted">Введите ID счетчиков через запятую, например: 123456, 789012</small>
+        </div>
+
+        <div class="form-group mb-3">
+            <label>Цели и их значения</label>
+            <div id="goals_container">
+                <!-- Здесь будут добавляться цели -->
+            </div>
+            <button type="button" class="btn btn-outline-primary mt-2" id="add_goal_btn">
+                <i class="fas fa-plus"></i> Добавить цель
+            </button>
         </div>
     </div>
 </div>
@@ -354,75 +308,40 @@
                 document.getElementById(`platforms_${platform}`).checked
             );
 
-            // Обновляем доступность опций в выпадающем списке стратегий
-            const strategySelect = document.getElementById('strategy_type');
-            const searchOnlyOptions = strategySelect.querySelectorAll('.search-only');
-            
-            searchOnlyOptions.forEach(option => {
-                if (hasNetwork) {
-                    option.style.display = 'none';
-                    if (option.selected) {
-                        strategySelect.value = '';
-                        updateStrategyParams('', 'strategy_params', 'strategy_specific_params');
-                    }
-                } else {
-                    option.style.display = '';
-                }
-            });
+            // Показываем/скрываем блоки стратегий
+            document.getElementById('search_strategy_block').style.display = hasSearch ? 'block' : 'none';
+            document.getElementById('network_strategy_block').style.display = hasNetwork ? 'block' : 'none';
         }
 
-        // Функция для обновления параметров стратегии
-        function updateStrategyParams(strategyType, containerId, specificParamsId) {
-            const container = document.getElementById(containerId);
-            const specificParams = document.getElementById(specificParamsId);
-            
-            if (!strategyType) {
-                container.style.display = 'none';
-                return;
+        // Функция для обновления параметров стратегии поиска
+        function updateSearchStrategyParams(strategyType) {
+            // Скрываем все блоки параметров
+            document.querySelectorAll('#search_strategy_params .strategy-params').forEach(block => {
+                block.style.display = 'none';
+            });
+
+            // Показываем нужный блок параметров
+            if (strategyType) {
+                const paramsBlock = document.querySelector(`#search_strategy_params .strategy-params[data-strategy="${strategyType}"]`);
+                if (paramsBlock) {
+                    paramsBlock.style.display = 'block';
+                }
             }
+        }
 
-            container.style.display = 'block';
-            specificParams.innerHTML = '';
+        // Функция для обновления параметров стратегии сетей
+        function updateNetworkStrategyParams(strategyType) {
+            // Скрываем все блоки параметров
+            document.querySelectorAll('#network_strategy_params .strategy-params').forEach(block => {
+                block.style.display = 'none';
+            });
 
-            // Добавляем специфические параметры в зависимости от типа стратегии
-            switch(strategyType) {
-                case 'WB_MAXIMUM_CLICKS':
-                    specificParams.innerHTML = `
-                        <div class="form-group mb-3">
-                            <label for="payment_type">Тип оплаты</label>
-                            <select class="form-select" id="payment_type" name="payment_type">
-                                <option value="CLICKS">Оплата за клики</option>
-                            </select>
-                        </div>
-                    `;
-                    break;
-                case 'WB_MAXIMUM_CONVERSIONS':
-                    specificParams.innerHTML = `
-                        <div class="form-group mb-3">
-                            <label for="payment_type">Тип оплаты</label>
-                            <select class="form-select" id="payment_type" name="payment_type">
-                                <option value="CLICKS">Оплата за клики</option>
-                                <option value="CONVERSIONS">Оплата за конверсии</option>
-                            </select>
-                        </div>
-                    `;
-                    break;
-                case 'AVERAGE_CPC':
-                    specificParams.innerHTML = `
-                        <div class="form-group mb-3">
-                            <label for="average_cpc">Средняя цена клика (руб.)</label>
-                            <input type="number" class="form-control" 
-                                   id="average_cpc" name="average_cpc" 
-                                   step="0.01" min="0">
-                        </div>
-                        <div class="form-group mb-3">
-                            <label for="payment_type">Тип оплаты</label>
-                            <select class="form-select" id="payment_type" name="payment_type">
-                                <option value="CLICKS">Оплата за клики</option>
-                            </select>
-                        </div>
-                    `;
-                    break;
+            // Показываем нужный блок параметров
+            if (strategyType) {
+                const paramsBlock = document.querySelector(`#network_strategy_params .strategy-params[data-strategy="${strategyType}"]`);
+                if (paramsBlock) {
+                    paramsBlock.style.display = 'block';
+                }
             }
         }
 
@@ -440,17 +359,129 @@
             });
         });
 
-        // Обработчик изменения типа стратегии
-        document.getElementById('strategy_type').addEventListener('change', function() {
-            updateStrategyParams(this.value, 'strategy_params', 'strategy_specific_params');
+        // Обработчик изменения типа стратегии поиска
+        document.getElementById('search_strategy_type').addEventListener('change', function() {
+            updateSearchStrategyParams(this.value);
         });
+
+        // Обработчик изменения типа стратегии сетей
+        document.getElementById('network_strategy_type').addEventListener('change', function() {
+            updateNetworkStrategyParams(this.value);
+        });
+
+        // Функция для создания элемента цели
+        function createGoalElement(goalId = '', value = '', cpa = '') {
+            const div = document.createElement('div');
+            div.className = 'goal-item mb-3 p-3 border rounded';
+            div.innerHTML = `
+                <div class="row">
+                    <div class="col-md-4">
+                        <label class="form-label">ID цели</label>
+                        <input type="text" class="form-control goal-id" name="goals[][id]" 
+                               value="${goalId}" placeholder="Введите ID цели">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Ценность конверсии (руб.)</label>
+                        <input type="number" class="form-control goal-value" name="goals[][value]" 
+                               value="${value}" step="0.01" min="0" placeholder="Введите ценность">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Цена конверсии (руб.)</label>
+                        <input type="number" class="form-control goal-cpa" name="goals[][cpa]" 
+                               value="${cpa}" step="0.01" min="0" placeholder="Введите цену">
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="button" class="btn btn-outline-danger remove-goal">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            return div;
+        }
+
+        // Функция для обновления видимости поля CPA
+        function updateCpaVisibility() {
+            const strategyType = document.getElementById('search_strategy_type').value;
+            const networkStrategyType = document.getElementById('network_strategy_type').value;
+            const isPayForConversion = strategyType === 'PAY_FOR_CONVERSION' || networkStrategyType === 'PAY_FOR_CONVERSION';
+            
+            document.querySelectorAll('.goal-cpa').forEach(input => {
+                const container = input.closest('.col-md-3');
+                container.style.display = isPayForConversion ? 'block' : 'none';
+                if (isPayForConversion) {
+                    input.setAttribute('required', 'required');
+                } else {
+                    input.removeAttribute('required');
+                }
+            });
+        }
+
+        // Обработчик добавления цели
+        document.getElementById('add_goal_btn').addEventListener('click', function() {
+            const container = document.getElementById('goals_container');
+            container.appendChild(createGoalElement());
+            updateCpaVisibility();
+        });
+
+        // Обработчик удаления цели
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.remove-goal')) {
+                e.target.closest('.goal-item').remove();
+            }
+        });
+
+        // Обработчики изменения стратегий
+        document.getElementById('search_strategy_type').addEventListener('change', updateCpaVisibility);
+        document.getElementById('network_strategy_type').addEventListener('change', updateCpaVisibility);
+
+        // Функция для переноса значений из стратегий в цели
+        function syncGoalsWithStrategy() {
+            const searchStrategyType = document.getElementById('search_strategy_type').value;
+            const networkStrategyType = document.getElementById('network_strategy_type').value;
+            const container = document.getElementById('goals_container');
+            
+            // Очищаем контейнер целей
+            container.innerHTML = '';
+
+            // Проверяем стратегии поиска
+            if (['WB_MAXIMUM_CONVERSION_RATE'].includes(searchStrategyType)) {
+                const goalId = document.getElementById('search_goal_id_conv')?.value;
+                
+                if (goalId) {
+                    container.appendChild(createGoalElement(goalId, '', ''));
+                }
+            }
+
+            // Проверяем стратегии сетей
+            if (['WB_MAXIMUM_CONVERSION_RATE'].includes(networkStrategyType)) {
+                const goalId = document.getElementById('network_goal_id_conv')?.value;
+                
+                if (goalId) {
+                    container.appendChild(createGoalElement(goalId, '', ''));
+                }
+            }
+
+            updateCpaVisibility();
+        }
+
+        // Добавляем обработчики для синхронизации целей
+        document.getElementById('search_strategy_type').addEventListener('change', syncGoalsWithStrategy);
+        document.getElementById('network_strategy_type').addEventListener('change', syncGoalsWithStrategy);
 
         // Инициализация при загрузке страницы
         checkPlatforms();
-        const strategyType = document.getElementById('strategy_type').value;
-        if (strategyType) {
-            updateStrategyParams(strategyType, 'strategy_params', 'strategy_specific_params');
+        const searchStrategyType = document.getElementById('search_strategy_type').value;
+        const networkStrategyType = document.getElementById('network_strategy_type').value;
+        
+        if (searchStrategyType) {
+            updateSearchStrategyParams(searchStrategyType);
         }
+        if (networkStrategyType) {
+            updateNetworkStrategyParams(networkStrategyType);
+        }
+        updateCpaVisibility();
+        syncGoalsWithStrategy();
     });
 </script>
 @endpush 
