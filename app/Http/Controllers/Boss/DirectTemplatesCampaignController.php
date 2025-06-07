@@ -11,11 +11,15 @@ class DirectTemplatesCampaignController extends Controller
 {
     public function create(DirectTemplate $template)
     {
-        // Здесь можно добавить загрузку счетчиков и целей из Яндекс.Метрики
-        $counters = []; // Загрузка счетчиков
-        $goals = []; // Загрузка целей
+        // Создаем новую кампанию с минимальными данными
+        $campaign = $template->campaigns()->create([
+            'name' => 'Новая кампания',
+            'status' => 'draft',
+            'completed_sections' => []
+        ]);
 
-        return view('boss.direct-templates.campaigns.create', compact('template', 'counters', 'goals'));
+        // Перенаправляем на страницу настроек
+        return redirect()->route('boss.direct-templates.campaigns.settings', [$template, $campaign]);
     }
 
     public function store(Request $request, DirectTemplate $template)
@@ -28,7 +32,8 @@ class DirectTemplatesCampaignController extends Controller
             // Дополнительные поля
             'placement_types' => 'nullable|array',
             'placement_types.*' => 'in:search,network,maps',
-            'strategy_type' => 'nullable|in:max_clicks,max_conversions,max_clicks_manual',
+            'search_bidding_strategy_type' => 'nullable|in:max_clicks,max_conversions,max_clicks_manual',
+            'network_bidding_strategy_type' => 'nullable|in:max_clicks,max_conversions,max_clicks_manual',
             'counter_ids' => 'nullable|array',
             'goals' => 'nullable|array',
             // Ограничения
@@ -93,7 +98,8 @@ class DirectTemplatesCampaignController extends Controller
             // Дополнительные поля
             'placement_types' => 'nullable|array',
             'placement_types.*' => 'in:search,network,maps',
-            'strategy_type' => 'nullable|in:max_clicks,max_conversions,max_clicks_manual',
+            'search_bidding_strategy_type' => 'nullable|in:max_clicks,max_conversions,max_clicks_manual',
+            'network_bidding_strategy_type' => 'nullable|in:max_clicks,max_conversions,max_clicks_manual',
             'counter_ids' => 'nullable|array',
             'goals' => 'nullable|array',
             // Ограничения
@@ -156,13 +162,48 @@ class DirectTemplatesCampaignController extends Controller
         return view('boss.direct-templates.campaigns.settings', compact('template', 'campaign', 'counters', 'goals'));
     }
 
-    public function limits(DirectTemplate $template, DirectTemplatesCampaign $campaign)
+    public function schedule(DirectTemplate $template, DirectTemplatesCampaign $campaign)
     {
-        return view('boss.direct-templates.campaigns.limits', compact('template', 'campaign'));
+        return view('boss.direct-templates.campaigns.schedule', compact('template', 'campaign'));
     }
 
     public function additionalSettings(DirectTemplate $template, DirectTemplatesCampaign $campaign)
     {
         return view('boss.direct-templates.campaigns.additional-settings', compact('template', 'campaign'));
+    }
+
+    public function corrections(DirectTemplate $template, DirectTemplatesCampaign $campaign)
+    {
+        return view('boss.direct-templates.campaigns.corrections', compact('template', 'campaign'));
+    }
+
+    public function restrictions(DirectTemplate $template, DirectTemplatesCampaign $campaign)
+    {
+        return view('boss.direct-templates.campaigns.restrictions', compact('template', 'campaign'));
+    }
+
+    public function updateSection(Request $request, DirectTemplate $template, DirectTemplatesCampaign $campaign)
+    {
+        $section = $request->input('section');
+        $isCompleted = $request->input('completed', false);
+
+        $completedSections = $campaign->completed_sections ?? [];
+        
+        if ($isCompleted) {
+            if (!in_array($section, $completedSections)) {
+                $completedSections[] = $section;
+            }
+        } else {
+            $completedSections = array_diff($completedSections, [$section]);
+        }
+
+        $campaign->update([
+            'completed_sections' => $completedSections
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'completed_sections' => $completedSections
+        ]);
     }
 } 

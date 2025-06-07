@@ -63,7 +63,7 @@
                                                     </div>
                                                 @endforeach
                                                 <a href="{{ route('boss.direct-templates.campaigns.create', $template) }}" class="text-decoration-none">
-                                                    <i class="fas fa-plus me-1"></i>Добавить кампанию
+                                                    <i class="fas fa-plus me-1"></i>Новая кампания
                                                 </a>
                                             </div>
                                         </td>

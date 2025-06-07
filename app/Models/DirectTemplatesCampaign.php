@@ -55,6 +55,7 @@ class DirectTemplatesCampaign extends Model
         'platforms',
         'weekly_budget',
         'max_clicks_average_cpc',
+        'completed_sections'
     ];
 
     /**
@@ -86,6 +87,7 @@ class DirectTemplatesCampaign extends Model
         'package_bidding_platforms' => 'array',
         'negative_keyword_shared_set_ids' => 'array',
         'platforms' => 'array',
+        'completed_sections' => 'array'
     ];
 
     /**

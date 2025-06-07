@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::table('direct_templates_campaigns', function (Blueprint $table) {
             $table->json('platforms')->nullable()->after('campaign_type');
-            $table->decimal('weekly_budget', 10, 2)->nullable()->after('daily_budget_mode');
-            $table->decimal('max_clicks_average_cpc', 10, 2)->nullable()->after('weekly_budget');
+            $table->decimal('max_clicks_average_cpc', 10, 2)->nullable()->after('platforms');
         });
     }
 
@@ -24,7 +23,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('direct_templates_campaigns', function (Blueprint $table) {
-            $table->dropColumn(['platforms', 'weekly_budget', 'max_clicks_average_cpc']);
+            $table->dropColumn(['platforms', 'max_clicks_average_cpc']);
         });
     }
 }; 

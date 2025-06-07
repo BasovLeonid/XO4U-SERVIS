@@ -10,7 +10,7 @@
 
     <div class="card">
         <div class="card-body">
-            <form action="{{ route('boss.direct-templates.campaigns.update', [$template, $campaign]) }}" method="POST">
+            <form action="{{ route('boss.direct-templates.campaigns.update', [$template, $campaign]) }}" method="POST" id="settingsForm">
                 @csrf
                 @method('PUT')
 
@@ -23,9 +23,27 @@
 
                 <div class="form-group">
                     <button type="submit" class="btn btn-primary">Сохранить изменения</button>
-                    <a href="{{ route('boss.direct-templates.edit', $template) }}" class="btn btn-secondary">Отмена</a>
+                    <a href="{{ route('boss.direct-templates.campaigns.show', [$template, $campaign]) }}" class="btn btn-secondary">Отмена</a>
                 </div>
             </form>
+
+            @if(config('app.debug'))
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Отладочная информация</h5>
+                </div>
+                <div class="card-body">
+                    <h6>Текущие данные кампании:</h6>
+                    <pre class="bg-light p-3">{{ json_encode($campaign->toArray(), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
+
+                    <h6 class="mt-3">Отправляемые данные:</h6>
+                    <pre class="bg-light p-3" id="formData"></pre>
+
+                    <h6 class="mt-3">Ответ сервера:</h6>
+                    <pre class="bg-light p-3" id="serverResponse"></pre>
+                </div>
+            </div>
+            @endif
         </div>
     </div>
 </x-boss.direct-templates.container>
@@ -59,6 +77,11 @@
 
     .campaign-nav-item .nav-link[aria-expanded="false"] .campaign-toggle-icon {
         transform: rotate(-90deg);
+    }
+
+    pre {
+        max-height: 300px;
+        overflow-y: auto;
     }
 </style>
 @endpush
@@ -175,6 +198,54 @@
         if (strategyType) {
             updateStrategyParams(strategyType, 'strategy_params', 'strategy_specific_params');
         }
+
+        // Отладочная информация
+        const form = document.getElementById('settingsForm');
+        const formDataElement = document.getElementById('formData');
+        const serverResponseElement = document.getElementById('serverResponse');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Собираем данные формы
+            const formData = new FormData(form);
+            const data = {};
+            for (let [key, value] of formData.entries()) {
+                // Обработка массивов (например, platforms[])
+                if (key.endsWith('[]')) {
+                    const baseKey = key.slice(0, -2);
+                    if (!data[baseKey]) {
+                        data[baseKey] = [];
+                    }
+                    data[baseKey].push(value);
+                } else {
+                    data[key] = value;
+                }
+            }
+            
+            // ВРЕМЕННО: Выводим собранные данные в отладочную информацию
+            console.log('Собранные данные формы:', data);
+            formDataElement.textContent = JSON.stringify(data, null, 2);
+            serverResponseElement.textContent = 'ВРЕМЕННО: Отправка данных отключена для отладки';
+
+            /* ВРЕМЕННО ЗАКОММЕНТИРОВАНО: Оригинальный код отправки данных
+            // Отправляем форму
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                serverResponseElement.textContent = JSON.stringify(data, null, 2);
+            })
+            .catch(error => {
+                serverResponseElement.textContent = 'Ошибка: ' + error.message;
+            });
+            */
+        });
     });
 </script>
 @endpush 

@@ -1,66 +1,3 @@
-<!-- Расписание показов -->
-<div class="mb-4">
-    <div class="card">
-        <div class="card-body">
-            <h6 class="mb-3">Расписание показов</h6>
-            
-            <div class="mb-3">
-                <label for="schedule_type" class="form-label">Расписание</label>
-                <select class="form-select @error('schedule_type') is-invalid @enderror" 
-                        id="schedule_type" name="schedule_type" required>
-                    <option value="everyday" {{ old('schedule_type', 'everyday') == 'everyday' ? 'selected' : '' }}>Каждый день, круглосуточно</option>
-                    <option value="workdays" {{ old('schedule_type') == 'workdays' ? 'selected' : '' }}>По будням с 8:00 до 20:00</option>
-                </select>
-                @error('schedule_type')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
-
-            <!-- Дополнительные настройки для расписания по будням -->
-            <div id="workdays_settings" style="display: none;">
-                <div class="mb-3">
-                    <label for="timezone" class="form-label">Часовой пояс</label>
-                    <select class="form-select @error('timezone') is-invalid @enderror" 
-                            id="timezone" name="timezone">
-                        <option value="moscow" {{ old('timezone', 'moscow') == 'moscow' ? 'selected' : '' }}>Москва</option>
-                        <option value="kaliningrad" {{ old('timezone') == 'kaliningrad' ? 'selected' : '' }}>Калининград (MSK -01:00)</option>
-                        <option value="samara" {{ old('timezone') == 'samara' ? 'selected' : '' }}>Самара (MSK +01:00)</option>
-                        <option value="ivanovka" {{ old('timezone') == 'ivanovka' ? 'selected' : '' }}>Ивановка (MSK +01:00)</option>
-                        <option value="ulyanovsk" {{ old('timezone') == 'ulyanovsk' ? 'selected' : '' }}>Ульяновск (MSK +01:00)</option>
-                        <option value="ekaterinburg" {{ old('timezone') == 'ekaterinburg' ? 'selected' : '' }}>Екатеринбург (MSK +02:00)</option>
-                        <option value="omsk" {{ old('timezone') == 'omsk' ? 'selected' : '' }}>Омск (MSK +03:00)</option>
-                        <option value="krasnoyarsk" {{ old('timezone') == 'krasnoyarsk' ? 'selected' : '' }}>Красноярск (MSK +04:00)</option>
-                        <option value="novokuznetsk" {{ old('timezone') == 'novokuznetsk' ? 'selected' : '' }}>Новокузнецк (MSK +04:00)</option>
-                        <option value="tomsk" {{ old('timezone') == 'tomsk' ? 'selected' : '' }}>Томск (MSK +04:00)</option>
-                        <option value="barnaul" {{ old('timezone') == 'barnaul' ? 'selected' : '' }}>Барнаул (MSK +04:00)</option>
-                        <option value="irkutsk" {{ old('timezone') == 'irkutsk' ? 'selected' : '' }}>Иркутск (MSK +05:00)</option>
-                        <option value="yakutsk" {{ old('timezone') == 'yakutsk' ? 'selected' : '' }}>Якутск (MSK +06:00)</option>
-                        <option value="chita" {{ old('timezone') == 'chita' ? 'selected' : '' }}>Чита (MSK +06:00)</option>
-                        <option value="vladivostok" {{ old('timezone') == 'vladivostok' ? 'selected' : '' }}>Владивосток (MSK +07:00)</option>
-                        <option value="srednekolymsk" {{ old('timezone') == 'srednekolymsk' ? 'selected' : '' }}>Среднеколымск (MSK +08:00)</option>
-                        <option value="petropavlovsk" {{ old('timezone') == 'petropavlovsk' ? 'selected' : '' }}>Петропавловск (MSK +09:00)</option>
-                    </select>
-                    @error('timezone')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="mb-3">
-                    <label for="holiday_schedule" class="form-label">В праздничные дни</label>
-                    <select class="form-select @error('holiday_schedule') is-invalid @enderror" 
-                            id="holiday_schedule" name="holiday_schedule">
-                        <option value="dont_show" {{ old('holiday_schedule', 'dont_show') == 'dont_show' ? 'selected' : '' }}>Не показывать</option>
-                        <option value="by_schedule" {{ old('holiday_schedule') == 'by_schedule' ? 'selected' : '' }}>По расписанию соответствующего дня недели</option>
-                    </select>
-                    @error('holiday_schedule')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <!-- Параметры URL -->
 <div class="mb-4">
     <div class="card">
@@ -68,15 +5,32 @@
             <h6 class="mb-3">Параметры URL</h6>
             
             <div class="mb-3">
-                <label for="url_parameters" class="form-label">Параметры URL</label>
-                <input type="text" class="form-control @error('url_parameters') is-invalid @enderror" 
-                       id="url_parameters" name="url_parameters" 
-                       value="{{ old('url_parameters') }}"
+                <label for="tracking_params" class="form-label">Параметры URL</label>
+                <input type="text" class="form-control @error('tracking_params') is-invalid @enderror" 
+                       id="tracking_params" name="tracking_params" 
+                       value="{{ old('tracking_params') }}"
                        placeholder="Например: utm_source=yandex&utm_medium=cpc&utm_campaign=campaign_name">
                 <div class="form-text">Введите параметры или UTM-метки. Они добавятся ко всем ссылкам, указанным в настройках объявлений внутри кампании.</div>
-                @error('url_parameters')
+                @error('tracking_params')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модель атрибуции -->
+<div class="mb-4">
+    <div class="card">
+        <div class="card-body">
+            <h6 class="mb-3">Модель атрибуции</h6>
+            
+            <div class="mb-3">
+                <label for="attribution_model" class="form-label">Модель атрибуции</label>
+                <select class="form-select" id="attribution_model" name="AttributionModel" disabled>
+                    <option value="AUTO" selected>Автоматическая</option>
+                </select>
+                <div class="form-text">В текущей версии доступна только автоматическая модель атрибуции.</div>
             </div>
         </div>
     </div>
@@ -91,9 +45,10 @@
             <!-- Переключатели -->
             <div class="mb-4">
                 <div class="form-check form-switch mb-3">
-                    <input class="form-check-input" type="checkbox" id="site_monitoring" name="site_monitoring" 
-                           {{ old('site_monitoring', true) ? 'checked' : '' }}>
-                    <label class="form-check-label" for="site_monitoring">
+                    <input class="form-check-input" type="checkbox" id="enable_site_monitoring" name="Settings[0][Option]" 
+                           value="ENABLE_SITE_MONITORING" {{ old('Settings.0.Option', 'ENABLE_SITE_MONITORING') == 'ENABLE_SITE_MONITORING' ? 'checked' : '' }}>
+                    <input type="hidden" name="Settings[0][Value]" value="YES">
+                    <label class="form-check-label" for="enable_site_monitoring">
                         Мониторинг сайта
                         <small class="d-block text-muted">
                             Если рекламируемый сайт будет недоступен, объявления автоматически остановятся, а вы получите уведомление. Показы возобновятся с восстановлением работы сайта.
@@ -102,9 +57,9 @@
                 </div>
 
                 <div class="form-check form-switch mb-3">
-                    <input class="form-check-input" type="checkbox" id="extended_geo_targeting" name="extended_geo_targeting" 
-                           {{ old('extended_geo_targeting', true) ? 'checked' : '' }}>
-                    <label class="form-check-label" for="extended_geo_targeting">
+                    <input class="form-check-input" type="checkbox" id="enable_area_of_interest_targeting" name="settings[ENABLE_AREA_OF_INTEREST_TARGETING]" 
+                           value="YES" {{ old('settings.ENABLE_AREA_OF_INTEREST_TARGETING', 'YES') == 'YES' ? 'checked' : '' }}>
+                    <label class="form-check-label" for="enable_area_of_interest_targeting">
                         Расширенный географический таргетинг
                         <small class="d-block text-muted">
                             Если в поисковом запросе есть название региона, указанного в географии показов, то пользователь увидит рекламу, даже если находится в другом регионе. Например, по запросу «купить квартиру в Москве» объявления могут показываться жителям любых регионов. В Рекламной сети пользователь может увидеть объявление, нацеленное на его регулярный регион, даже если сейчас он из него уехал.
@@ -113,9 +68,9 @@
                 </div>
 
                 <div class="form-check form-switch mb-3">
-                    <input class="form-check-input" type="checkbox" id="organization_info" name="organization_info" 
-                           {{ old('organization_info', true) ? 'checked' : '' }}>
-                    <label class="form-check-label" for="organization_info">
+                    <input class="form-check-input" type="checkbox" id="enable_company_info" name="settings[ENABLE_COMPANY_INFO]" 
+                           value="YES" {{ old('settings.ENABLE_COMPANY_INFO', 'YES') == 'YES' ? 'checked' : '' }}>
+                    <label class="form-check-label" for="enable_company_info">
                         Информация об организации в объявлениях на Картах
                         <small class="d-block text-muted">
                             Фотографии, рейтинг и отзывы из Яндекс Бизнеса. Это сделает объявления более заметными, а клиенты смогут подробнее ознакомиться с вашим предложением.
@@ -123,104 +78,76 @@
                     </label>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
 
-            <!-- Директ помогает -->
-            <div class="mb-4">
-                <h6 class="mb-3">Директ помогает</h6>
-                
-                <div class="form-check mb-3">
-                    <input class="form-check-input" type="checkbox" id="auto_recommendations" name="auto_recommendations" 
-                           {{ old('auto_recommendations') ? 'checked' : '' }}>
-                    <label class="form-check-label" for="auto_recommendations">
-                        Автоматически применять рекомендации
-                        <small class="d-block text-muted">
-                            Алгоритмы Директа будут анализировать рекламу и корректировать настройки. Например, заменят неэффективные изображения, нецелевые тематические слова, добавят счётчик Метрики или цели, начнут продвигать вашу организацию в Картах. Так реклама станет эффективнее.
-                        </small>
-                    </label>
-                </div>
-
-                <div class="form-check mb-3">
-                    <input class="form-check-input" type="checkbox" id="optimize_extended_settings" name="optimize_extended_settings" 
-                           {{ old('optimize_extended_settings') ? 'checked' : '' }}>
-                    <label class="form-check-label" for="optimize_extended_settings">
-                        Оптимизировать расширенные настройки — цели, подбор аудитории, недельный бюджет
-                    </label>
-                </div>
-
-                <div class="form-check mb-3">
-                    <input class="form-check-input" type="checkbox" id="optimize_ad_text" name="optimize_ad_text" 
-                           {{ old('optimize_ad_text') ? 'checked' : '' }}>
-                    <label class="form-check-label" for="optimize_ad_text">
-                        Оптимизировать текст объявлений под запрос
-                        <small class="d-block text-muted">
-                            Это может сделать текстово-графические объявления более релевантными поисковым запросам и принести больше конверсий.
-                        </small>
-                    </label>
-                </div>
+<!-- Директ помогает -->
+<div class="mb-4">
+    <div class="card">
+        <div class="card-header bg-light">
+            <h6 class="mb-0">Директ помогает</h6>
+        </div>
+        <div class="card-body">
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="auto_recommendations" name="settings[ENABLE_AUTO_RECOMMENDATIONS]" 
+                       value="YES" {{ old('settings.ENABLE_AUTO_RECOMMENDATIONS') == 'YES' ? 'checked' : '' }}>
+                <label class="form-check-label" for="auto_recommendations">
+                    Автоматически применять рекомендации
+                    <small class="d-block text-muted">
+                        Алгоритмы Директа будут анализировать рекламу и корректировать настройки. Например, заменят неэффективные изображения, нецелевые тематические слова, добавят счётчик Метрики или цели, начнут продвигать вашу организацию в Картах. Так реклама станет эффективнее.
+                    </small>
+                </label>
             </div>
 
-            <!-- Приоритизация объявлений -->
-            <div class="mb-3">
-                <h6 class="mb-3">Приоритизация объявлений</h6>
-                
-                <div class="form-check mb-2">
-                    <input class="form-check-input" type="radio" name="ad_priority" id="priority_best_metrics" 
-                           value="best_metrics" {{ old('ad_priority', 'best_metrics') == 'best_metrics' ? 'checked' : '' }}>
-                    <label class="form-check-label" for="priority_best_metrics">
-                        С лучшим сочетанием показателей
-                        <small class="d-block text-muted">
-                            Учитываются прогнозируемая кликабельность (CTR), коэффициент качества объявления и ставка для фразы
-                        </small>
-                    </label>
-                </div>
-
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="ad_priority" id="priority_closest_phrase" 
-                           value="closest_phrase" {{ old('ad_priority') == 'closest_phrase' ? 'checked' : '' }}>
-                    <label class="form-check-label" for="priority_closest_phrase">
-                        По фразе, наиболее близкой к запросу
-                        <small class="d-block text-muted">
-                            Ставка для фразы не учитывается
-                        </small>
-                    </label>
-                </div>
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="optimize_extended_settings" name="settings[ENABLE_EXTENDED_SETTINGS_OPTIMIZATION]" 
+                       value="YES" {{ old('settings.ENABLE_EXTENDED_SETTINGS_OPTIMIZATION') == 'YES' ? 'checked' : '' }}>
+                <label class="form-check-label" for="optimize_extended_settings">
+                    Оптимизировать расширенные настройки — цели, подбор аудитории, недельный бюджет
+                </label>
             </div>
 
-            <!-- Корректировки ставок -->
-            <div class="mb-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h6 class="mb-3">Корректировки ставок</h6>
-                        
-                        <!-- Пол и возраст -->
-                        <div class="mb-4">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h6 class="mb-0">Пол и возраст</h6>
-                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="addDemographicsModifier()">
-                                    <i class="bi bi-plus"></i> Добавить корректировку
-                                </button>
-                            </div>
-                            
-                            <div id="demographics_modifiers">
-                                <!-- Здесь будут добавляться корректировки -->
-                            </div>
-                        </div>
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="optimize_ad_text" name="settings[ENABLE_AD_TEXT_OPTIMIZATION]" 
+                       value="YES" {{ old('settings.ENABLE_AD_TEXT_OPTIMIZATION') == 'YES' ? 'checked' : '' }}>
+                <label class="form-check-label" for="optimize_ad_text">
+                    Оптимизировать текст объявлений под запрос
+                    <small class="d-block text-muted">
+                        Это может сделать текстово-графические объявления более релевантными поисковым запросам и принести больше конверсий.
+                    </small>
+                </label>
+            </div>
+        </div>
+    </div>
+</div>
 
-                        <!-- Устройства -->
-                        <div class="mb-4">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h6 class="mb-0">Устройства</h6>
-                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="addDeviceModifier()">
-                                    <i class="bi bi-plus"></i> Добавить корректировку
-                                </button>
-                            </div>
-                            
-                            <div id="device_modifiers">
-                                <!-- Здесь будут добавляться корректировки -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
+<!-- Приоритизация объявлений -->
+<div class="mb-4">
+    <div class="card">
+        <div class="card-body">
+            <h6 class="mb-3">Приоритизация объявлений</h6>
+            
+            <div class="form-check mb-2">
+                <input class="form-check-input" type="radio" name="settings[CAMPAIGN_EXACT_PHRASE_MATCHING_ENABLED]" id="priority_best_metrics" 
+                       value="YES" {{ old('settings.CAMPAIGN_EXACT_PHRASE_MATCHING_ENABLED', 'YES') == 'YES' ? 'checked' : '' }}>
+                <label class="form-check-label" for="priority_best_metrics">
+                    С лучшим сочетанием показателей
+                    <small class="d-block text-muted">
+                        Учитываются прогнозируемая кликабельность (CTR), коэффициент качества объявления и ставка для фразы
+                    </small>
+                </label>
+            </div>
+
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="settings[CAMPAIGN_EXACT_PHRASE_MATCHING_ENABLED]" id="priority_closest_phrase" 
+                       value="NO" {{ old('settings.CAMPAIGN_EXACT_PHRASE_MATCHING_ENABLED') == 'NO' ? 'checked' : '' }}>
+                <label class="form-check-label" for="priority_closest_phrase">
+                    По фразе, наиболее близкой к запросу
+                    <small class="d-block text-muted">
+                        Ставка для фразы не учитывается
+                    </small>
+                </label>
             </div>
         </div>
     </div>

@@ -1,18 +1,18 @@
 @extends('boss.layouts.app')
 
-@section('title', 'Дополнительные настройки')
+@section('title', 'Корректировки ставок')
 
 @section('content')
-    <x-boss.direct-templates.container :title="'Дополнительные настройки'">
+    <x-boss.direct-templates.container :title="'Корректировки ставок'">
         <x-slot:sidebar>
             <x-yandex-direct.campaigns.sidebar :campaign="$campaign" />
         </x-slot:sidebar>
 
-        <form action="{{ route('boss.direct-templates.campaigns.update', [$template, $campaign]) }}" method="POST" id="additionalSettingsForm">
+        <form action="{{ route('boss.direct-templates.campaigns.update', [$template, $campaign]) }}" method="POST" id="correctionsForm">
             @csrf
             @method('PUT')
             
-            @include('yandex_direct.campaigns.additional-settings')
+            @include('yandex_direct.campaigns.corrections')
 
             <div class="form-group mt-3">
                 <button type="submit" class="btn btn-primary">
@@ -56,7 +56,7 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const form = document.getElementById('additionalSettingsForm');
+        const form = document.getElementById('correctionsForm');
         const formDataElement = document.getElementById('formData');
         const serverResponseElement = document.getElementById('serverResponse');
 
