@@ -8,7 +8,7 @@
 
 ## Структура модуля
 
-```
+
 app/
 ├── Http/
 │   └── Controllers/
@@ -50,16 +50,17 @@ app/
 resources/
 └── views/
     └── yandex-direct/          # Представления модуля
-        └── campaigns/         # Представления для кампаний
-            ├── partials/                # Частичные представления
-            │   └── sidebar.blade.php
-            └── settings/               # Настройки кампаний
-                ├── basic_settings.blade.php
-                ├── advanced_settings.blade.php
-                ├── additional-settings.blade.php
-                ├── restrictions.blade.php
-                ├── schedule.blade.php
-                └── corrections.blade.php
+        ├── interface_setting.blade.php    # Основной интерфейс настроек
+        ├── partials/                     # Частичные представления
+        │   ├── sidebar.blade.php         # Боковая панель
+        │   └── styles.blade.php          # Стили интерфейса
+        └── campaigns/                    # Представления для кампаний
+            ├── basic_settings.blade.php
+            ├── advanced_settings.blade.php
+            ├── additional-settings.blade.php
+            ├── restrictions.blade.php
+            ├── schedule.blade.php
+            └── corrections.blade.php
 ```
 
 
@@ -74,45 +75,60 @@ resources/
 - `app/View/Components/YandexDirect/` - компоненты модуля
 - `resources/views/yandex-direct/` - представления модуля
 
-### 2. Модуль Яндекс.Директ
-- `app/Services/YandexDirect/` - сервисы модуля
-  - `YandexDirectAPI/` - API Яндекс.Директ
+### 2. Основной интерфейс настроек
+- `resources/views/yandex-direct/interface_setting.blade.php` - основной файл интерфейса, который объединяет все компоненты настроек кампании
+  - Подключает все необходимые компоненты настроек
+  - Обеспечивает единый интерфейс для редактирования кампании
+  - Содержит общую форму для сохранения изменений
+  - Включает адаптивную верстку
+  - Подключает стили через `@include('yandex-direct.partials.styles')`
 
-### 3. Преимущества такой структуры:
-1. **Соблюдение стандартов Laravel**
-   - Контроллеры в `app/Http/Controllers/YandexDirect/`
-   - Модели в `app/Models/YandexDirect/`
-   - Компоненты в `app/View/Components/YandexDirect/`
-   - Представления в `resources/views/yandex-direct/`
+### 3. Стили интерфейса
+- `resources/views/yandex-direct/partials/styles.blade.php` - основные стили интерфейса
+  - Содержит все стили для основного интерфейса
+  - Включает стили для сайдбара, форм, кнопок
+  - Обеспечивает адаптивность на разных устройствах
+  - Использует современные CSS-свойства и анимации
+  - Подключается через `@include` для безопасности и удобства поддержки
+
+### 4. Компоненты настроек
+- `basic_settings.blade.php` - базовые настройки кампании
+- `advanced_settings.blade.php` - расширенные настройки
+- `additional-settings.blade.php` - дополнительные настройки
+- `restrictions.blade.php` - ограничения
+- `schedule.blade.php` - расписание показов
+- `corrections.blade.php` - корректировки ставок
+
+### 5. Использование интерфейса
+```blade
+@include('yandex-direct.interface_setting', [
+    'campaign' => $campaign,
+    'counters' => $counters,
+    'goals' => $goals,
+    'template' => $template
+])
+```
+
+### 6. Преимущества новой структуры
+1. **Единый интерфейс**
+   - Все настройки доступны в одном месте
+   - Удобная навигация через сайдбар
+   - Единая форма для сохранения изменений
 
 2. **Модульность**
-   - Все компоненты модуля изолированы в соответствующих директориях
-   - Легко переносить между проектами
-   - Четкое разделение ответственности
+   - Каждый компонент настроек независим
+   - Легко добавлять новые компоненты
+   - Простое обновление отдельных частей
 
-3. **Масштабируемость**
-   - Простое добавление новых компонентов
-   - Легкое расширение функциональности
-   - Удобное тестирование
+3. **Адаптивность**
+   - Корректное отображение на всех устройствах
+   - Гибкая структура с использованием flexbox
+   - Оптимизированная мобильная версия
 
 4. **Поддержка**
-   - Стандартные инструменты Laravel работают "из коробки"
-   - Понятная структура для новых разработчиков
-   - Легкое обновление
-
-### 4. Регистрация в сервис-провайдере
-
-```php
-// app/YandexDirect/YandexDirectServiceProvider.php
-public function boot()
-{
-    // Регистрация представлений
-    $this->loadViewsFrom(resource_path('views/yandex-direct'), 'yandex-direct');
-    
-    // Регистрация компонентов
-    Blade::componentNamespace('App\\View\\Components\\YandexDirect', 'yandex-direct');
-}
-```
+   - Четкая структура файлов
+   - Понятная организация компонентов
+   - Легкое сопровождение кода
 
 ## Контроллеры
 

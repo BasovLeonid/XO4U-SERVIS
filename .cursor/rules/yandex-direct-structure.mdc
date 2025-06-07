@@ -5,13 +5,20 @@ alwaysApply: false
 ---
 # Структура проекта Яндекс.Директ
 
-## Основные компоненты
-- Сервис-провайдер: [YandexDirectServiceProvider.php](mdc:app/Providers/YandexDirectServiceProvider.php)
-- Фасад: [YandexDirect.php](mdc:app/Facades/YandexDirect.php)
-- Менеджер: [YandexDirectManager.php](mdc:app/Services/YandexDirect/YandexDirectManager.php)
+
+## Контроллеры
+- CampaignController: [CampaignController.php](mdc:app/Http/Controllers/YandexDirect/CampaignController.php)
+- AdGroupController: [AdGroupController.php](mdc:app/Http/Controllers/YandexDirect/AdGroupController.php)
+- AdController: [AdController.php](mdc:app/Http/Controllers/YandexDirect/AdController.php)
+- SettingsController: [SettingsController.php](mdc:app/Http/Controllers/YandexDirect/SettingsController.php)
+- ApiController: [ApiController.php](mdc:app/Http/Controllers/YandexDirect/ApiController.php)
+
+## Модели
+- Campaign: [Campaign.php](mdc:app/Models/YandexDirect/Campaign.php)
+- AdGroup: [AdGroup.php](mdc:app/Models/YandexDirect/AdGroup.php)
+- Ad: [Ad.php](mdc:app/Models/YandexDirect/Ad.php)
 
 ## Компоненты кампаний
-- Основной компонент: [CampaignManager.php](mdc:app/View/Components/YandexDirect/Campaigns/CampaignManager.php)
 - Базовые настройки: [BasicSettings.php](mdc:app/View/Components/YandexDirect/Campaigns/BasicSettings.php)
 - Расширенные настройки: [AdvancedSettings.php](mdc:app/View/Components/YandexDirect/Campaigns/AdvancedSettings.php)
 - Дополнительные настройки: [AdditionalSettings.php](mdc:app/View/Components/YandexDirect/Campaigns/AdditionalSettings.php)
@@ -21,15 +28,30 @@ alwaysApply: false
 - Корректировки: [Corrections.php](mdc:app/View/Components/YandexDirect/Campaigns/Corrections.php)
 
 ## Представления
-- Основное представление: [manager.blade.php](mdc:resources/views/yandex-direct/campaigns/manager.blade.php)
-- Базовые настройки: [basic.blade.php](mdc:resources/views/yandex-direct/campaigns/basic.blade.php)
-- Расширенные настройки: [advanced.blade.php](mdc:resources/views/yandex-direct/campaigns/advanced.blade.php)
-- Дополнительные настройки: [additional.blade.php](mdc:resources/views/yandex-direct/campaigns/additional.blade.php)
-- Ограничения: [restrictions.blade.php](mdc:resources/views/yandex-direct/campaigns/restrictions.blade.php)
-- Боковая панель: [sidebar.blade.php](mdc:resources/views/yandex-direct/campaigns/sidebar.blade.php)
-- Расписание: [schedule.blade.php](mdc:resources/views/yandex-direct/campaigns/schedule.blade.php)
-- Корректировки: [corrections.blade.php](mdc:resources/views/yandex-direct/campaigns/corrections.blade.php)
+- Основной интерфейс: [interface_setting.blade.php](mdc:resources/views/yandex-direct/interface_setting.blade.php)
+- Боковая панель: [sidebar.blade.php](mdc:resources/views/yandex-direct/campaigns/partials/sidebar.blade.php)
+- Базовые настройки: [basic_settings.blade.php](mdc:resources/views/yandex-direct/campaigns/settings/basic_settings.blade.php)
+- Расширенные настройки: [advanced_settings.blade.php](mdc:resources/views/yandex-direct/campaigns/settings/advanced_settings.blade.php)
+- Дополнительные настройки: [additional-settings.blade.php](mdc:resources/views/yandex-direct/campaigns/settings/additional-settings.blade.php)
+- Ограничения: [restrictions.blade.php](mdc:resources/views/yandex-direct/campaigns/settings/restrictions.blade.php)
+- Расписание: [schedule.blade.php](mdc:resources/views/yandex-direct/campaigns/settings/schedule.blade.php)
+- Корректировки: [corrections.blade.php](mdc:resources/views/yandex-direct/campaigns/settings/corrections.blade.php)
+
+## API Сервисы
+- Direct API (v5): [Direct/](mdc:app/Services/YandexDirect/YandexDirectAPI/Direct)
+  - Api клиенты
+  - DTO объекты
+  - Перечисления
+  - Исключения
+  - Ресурсы API
+- Direct API (v4): [DirectV4/](mdc:app/Services/YandexDirect/YandexDirectAPI/DirectV4)
+  - Api клиенты
+  - DTO объекты
+  - Ресурсы API
 
 ## Конфигурация
 - Основной конфиг: [yandex-direct.php](mdc:config/yandex-direct.php)
+
+
+
 
