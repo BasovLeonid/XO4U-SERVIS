@@ -5,7 +5,7 @@
 @section('content')
 <x-boss.direct-templates.container title="Настройки кампании '{{ $campaign->name }}'">
     <x-slot:sidebar>
-        <x-yandex-direct.campaigns.sidebar :campaign="$campaign" />
+        <x-yandex-direct.campaigns.sidebar :campaign="$campaign" :active-section="'settings'" />
     </x-slot>
 
     <div class="card">
@@ -14,12 +14,21 @@
                 @csrf
                 @method('PUT')
 
-                <x-yandex-direct.campaigns.basic-settings :campaign="$campaign" />
+                @include('yandex-direct.campaigns.settings.basic_settings', ['campaign' => $campaign])
                 
-                <x-yandex-direct.campaigns.advanced-settings 
-                    :campaign="$campaign"
-                    :counters="$counters"
-                    :goals="$goals" />
+                @include('yandex-direct.campaigns.settings.advanced_settings', [
+                    'campaign' => $campaign,
+                    'counters' => $counters,
+                    'goals' => $goals
+                ])
+
+                @include('yandex-direct.campaigns.settings.additional-settings', ['campaign' => $campaign])
+                
+                @include('yandex-direct.campaigns.settings.restrictions', ['campaign' => $campaign])
+                
+                @include('yandex-direct.campaigns.settings.schedule', ['campaign' => $campaign])
+                
+                @include('yandex-direct.campaigns.settings.corrections', ['campaign' => $campaign])
 
                 <div class="form-group">
                     <button type="submit" class="btn btn-primary">Сохранить изменения</button>

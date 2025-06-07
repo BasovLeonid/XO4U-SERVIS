@@ -4,9 +4,137 @@
 
 ### Models
 - `app/Models/`
-  - `DirectTemplate.php` - модель шаблона
-  - `DirectTemplatesCampaign.php` - модель кампании
-  - `DirectTemplatesCampaignSection.php` - модель раздела кампании
+  - `DirectTemplate.php`
+    - Свойства:
+      - `name` - название шаблона
+      - `description` - описание шаблона
+      - `status` - статус шаблона
+      - `type` - тип шаблона
+      - `settings` - настройки шаблона (JSON)
+      - `user_id` - ID владельца
+    - Отношения:
+      - `user()` - связь с пользователем
+      - `campaigns()` - связь с кампаниями
+    - Методы:
+      - `scopeActive()` - область видимости активных шаблонов
+      - `scopeByUser()` - фильтрация по пользователю
+      - `getSettingsAttribute()` - получение настроек
+      - `setSettingsAttribute()` - установка настроек
+      - `validateSettings()` - валидация настроек
+      - `canBeEdited()` - проверка возможности редактирования
+      - `getStatistics()` - получение статистики использования
+
+  - `DirectTemplatesCampaign.php`
+    - Свойства:
+      - `name` - название кампании
+      - `status` - статус кампании
+      - `type` - тип кампании
+      - `budget` - бюджет кампании
+      - `strategy` - стратегия кампании
+      - `platforms` - платформы показа (JSON)
+      - `schedule` - расписание (JSON)
+      - `restrictions` - ограничения (JSON)
+      - `corrections` - корректировки (JSON)
+      - `additional_settings` - дополнительные настройки (JSON)
+      - `template_id` - ID шаблона
+    - Отношения:
+      - `template()` - связь с шаблоном
+      - `sections()` - связь с разделами
+      - `logs()` - связь с логами
+    - Методы:
+      - `scopeActive()` - область видимости активных кампаний
+      - `scopeByTemplate()` - фильтрация по шаблону
+      - `getPlatformsAttribute()` - получение платформ
+      - `setPlatformsAttribute()` - установка платформ
+      - `getScheduleAttribute()` - получение расписания
+      - `setScheduleAttribute()` - установка расписания
+      - `validateStrategy()` - валидация стратегии
+      - `validatePlatforms()` - валидация платформ
+      - `validateBudget()` - валидация бюджета
+      - `getStatistics()` - получение статистики
+      - `syncWithYandex()` - синхронизация с Яндекс.Директ
+      - `exportData()` - экспорт данных
+      - `importData()` - импорт данных
+
+  - `DirectTemplatesCampaignSection.php`
+    - Свойства:
+      - `name` - название раздела
+      - `status` - статус раздела
+      - `type` - тип раздела
+      - `content` - содержимое раздела (JSON)
+      - `settings` - настройки раздела (JSON)
+      - `campaign_id` - ID кампании
+    - Отношения:
+      - `campaign()` - связь с кампанией
+      - `logs()` - связь с логами
+    - Методы:
+      - `scopeActive()` - область видимости активных разделов
+      - `scopeByCampaign()` - фильтрация по кампании
+      - `getContentAttribute()` - получение содержимого
+      - `setContentAttribute()` - установка содержимого
+      - `getSettingsAttribute()` - получение настроек
+      - `setSettingsAttribute()` - установка настроек
+      - `validateContent()` - валидация содержимого
+      - `validateSettings()` - валидация настроек
+      - `getStatistics()` - получение статистики
+      - `updateStatus()` - обновление статуса
+      - `syncWithYandex()` - синхронизация с Яндекс.Директ
+
+  - `DirectTemplatesCampaignLog.php`
+    - Свойства:
+      - `level` - уровень лога
+      - `message` - сообщение
+      - `context` - контекст (JSON)
+      - `campaign_id` - ID кампании
+      - `section_id` - ID раздела (опционально)
+    - Отношения:
+      - `campaign()` - связь с кампанией
+      - `section()` - связь с разделом
+    - Методы:
+      - `scopeByLevel()` - фильтрация по уровню
+      - `scopeByCampaign()` - фильтрация по кампании
+      - `scopeBySection()` - фильтрация по разделу
+      - `getContextAttribute()` - получение контекста
+      - `setContextAttribute()` - установка контекста
+      - `formatMessage()` - форматирование сообщения
+      - `clearOldLogs()` - очистка старых логов
+
+  - `DirectTemplatesCampaignAnalytics.php`
+    - Свойства:
+      - `date` - дата
+      - `metrics` - метрики (JSON)
+      - `campaign_id` - ID кампании
+      - `section_id` - ID раздела (опционально)
+    - Отношения:
+      - `campaign()` - связь с кампанией
+      - `section()` - связь с разделом
+    - Методы:
+      - `scopeByDate()` - фильтрация по дате
+      - `scopeByCampaign()` - фильтрация по кампании
+      - `scopeBySection()` - фильтрация по разделу
+      - `getMetricsAttribute()` - получение метрик
+      - `setMetricsAttribute()` - установка метрик
+      - `calculateMetrics()` - расчет метрик
+      - `generateReport()` - генерация отчета
+      - `exportData()` - экспорт данных
+
+  - `DirectTemplatesCampaignSync.php`
+    - Свойства:
+      - `status` - статус синхронизации
+      - `last_sync` - время последней синхронизации
+      - `sync_data` - данные синхронизации (JSON)
+      - `campaign_id` - ID кампании
+    - Отношения:
+      - `campaign()` - связь с кампанией
+    - Методы:
+      - `scopeByStatus()` - фильтрация по статусу
+      - `scopeByCampaign()` - фильтрация по кампании
+      - `getSyncDataAttribute()` - получение данных синхронизации
+      - `setSyncDataAttribute()` - установка данных синхронизации
+      - `startSync()` - запуск синхронизации
+      - `checkStatus()` - проверка статуса
+      - `forceSync()` - принудительная синхронизация
+      - `clearSyncData()` - очистка данных синхронизации
 
 ### Services
 - `app/Services/`

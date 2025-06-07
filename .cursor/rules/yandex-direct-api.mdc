@@ -1,0 +1,43 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# API и маршруты Яндекс.Директ
+
+## Контроллеры
+- Контроллер разделов: [CampaignSectionController.php](mdc:app/Http/Controllers/YandexDirect/CampaignSectionController.php)
+- Контроллер данных: [CampaignDataController.php](mdc:app/Http/Controllers/YandexDirect/CampaignDataController.php)
+
+## Маршруты
+Основные маршруты определены в [YandexDirectServiceProvider.php](mdc:app/Providers/YandexDirectServiceProvider.php):
+
+```php
+Route::prefix('api/yandex-direct')->group(function () {
+    // Получение HTML раздела
+    Route::get('campaign/{campaign}/section/{section}', [CampaignSectionController::class, 'getSection']);
+    
+    // Обновление данных раздела
+    Route::post('campaign/{campaign}/section/{section}', [CampaignSectionController::class, 'updateSection']);
+    
+    // Валидация данных раздела
+    Route::post('campaign/{campaign}/validate/{section}', [CampaignSectionController::class, 'validateSection']);
+});
+```
+
+## Использование API
+Пример использования через фасад:
+
+```php
+use App\Facades\YandexDirect;
+
+// Получение HTML раздела
+$html = YandexDirect::getSectionHtml($campaign, 'basic');
+
+// Обновление данных
+YandexDirect::updateSection($campaign, 'basic', $data);
+
+// Валидация данных
+$validation = YandexDirect::validateSection($campaign, 'basic', $data);
+```
+

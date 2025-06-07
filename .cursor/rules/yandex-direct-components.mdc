@@ -1,0 +1,57 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Компоненты Яндекс.Директ
+
+## Основной компонент CampaignManager
+[CampaignManager.php](mdc:app/View/Components/YandexDirect/Campaigns/CampaignManager.php) - основной компонент, управляющий всеми разделами кампании.
+
+### Публичные свойства
+```php
+public $campaign;        // Модель кампании
+public $mode;           // Режим работы (view/edit)
+public $activeSection;  // Активный раздел
+```
+
+### Методы
+```php
+public function render() // Рендеринг основного представления
+public function update() // Обновление данных
+public function validate() // Валидация данных
+```
+
+## Взаимодействие компонентов
+
+### Иерархия
+```
+CampaignManager
+├── BasicSettings
+├── AdvancedSettings
+├── AdditionalSettings
+├── Restrictions
+├── Sidebar
+├── Schedule
+└── Corrections
+```
+
+### События
+Каждый компонент может генерировать события:
+- `section-updated` - обновление данных раздела
+- `section-validated` - валидация данных раздела
+- `section-changed` - изменение активного раздела
+
+### Пример использования
+```blade
+<x-yandex-direct.campaigns.manager 
+    :campaign="$campaign"
+    :mode="'edit'"
+    :active-section="'basic'"
+>
+    <x-yandex-direct.campaigns.basic-settings />
+    <x-yandex-direct.campaigns.advanced-settings />
+    <x-yandex-direct.campaigns.additional-settings />
+</x-yandex-direct.campaigns.manager>
+```
+

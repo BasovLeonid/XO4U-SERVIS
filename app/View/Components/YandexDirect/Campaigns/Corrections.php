@@ -4,7 +4,7 @@ namespace App\YandexDirect\Components\Campaigns;
 
 use Illuminate\View\Component;
 
-class BasicSettings extends Component
+class Corrections extends Component
 {
     public $campaign;
 
@@ -15,6 +15,6 @@ class BasicSettings extends Component
 
     public function render()
     {
-        return view('yandex-direct::campaigns.settings.basic');
+        return view('yandex-direct::campaigns.settings.corrections');
     }
 } 

@@ -1,0 +1,35 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Структура проекта Яндекс.Директ
+
+## Основные компоненты
+- Сервис-провайдер: [YandexDirectServiceProvider.php](mdc:app/Providers/YandexDirectServiceProvider.php)
+- Фасад: [YandexDirect.php](mdc:app/Facades/YandexDirect.php)
+- Менеджер: [YandexDirectManager.php](mdc:app/Services/YandexDirect/YandexDirectManager.php)
+
+## Компоненты кампаний
+- Основной компонент: [CampaignManager.php](mdc:app/View/Components/YandexDirect/Campaigns/CampaignManager.php)
+- Базовые настройки: [BasicSettings.php](mdc:app/View/Components/YandexDirect/Campaigns/BasicSettings.php)
+- Расширенные настройки: [AdvancedSettings.php](mdc:app/View/Components/YandexDirect/Campaigns/AdvancedSettings.php)
+- Дополнительные настройки: [AdditionalSettings.php](mdc:app/View/Components/YandexDirect/Campaigns/AdditionalSettings.php)
+- Ограничения: [Restrictions.php](mdc:app/View/Components/YandexDirect/Campaigns/Restrictions.php)
+- Боковая панель: [Sidebar.php](mdc:app/View/Components/YandexDirect/Campaigns/Sidebar.php)
+- Расписание: [Schedule.php](mdc:app/View/Components/YandexDirect/Campaigns/Schedule.php)
+- Корректировки: [Corrections.php](mdc:app/View/Components/YandexDirect/Campaigns/Corrections.php)
+
+## Представления
+- Основное представление: [manager.blade.php](mdc:resources/views/yandex-direct/campaigns/manager.blade.php)
+- Базовые настройки: [basic.blade.php](mdc:resources/views/yandex-direct/campaigns/basic.blade.php)
+- Расширенные настройки: [advanced.blade.php](mdc:resources/views/yandex-direct/campaigns/advanced.blade.php)
+- Дополнительные настройки: [additional.blade.php](mdc:resources/views/yandex-direct/campaigns/additional.blade.php)
+- Ограничения: [restrictions.blade.php](mdc:resources/views/yandex-direct/campaigns/restrictions.blade.php)
+- Боковая панель: [sidebar.blade.php](mdc:resources/views/yandex-direct/campaigns/sidebar.blade.php)
+- Расписание: [schedule.blade.php](mdc:resources/views/yandex-direct/campaigns/schedule.blade.php)
+- Корректировки: [corrections.blade.php](mdc:resources/views/yandex-direct/campaigns/corrections.blade.php)
+
+## Конфигурация
+- Основной конфиг: [yandex-direct.php](mdc:config/yandex-direct.php)
+

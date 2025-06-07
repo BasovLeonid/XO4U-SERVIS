@@ -1,20 +1,22 @@
 <?php
 
-namespace App\View\Components\YandexDirect\Campaigns;
+namespace App\YandexDirect\Components\Campaigns;
 
 use Illuminate\View\Component;
 
 class Sidebar extends Component
 {
     public $campaign;
+    public $activeSection;
 
-    public function __construct($campaign)
+    public function __construct($campaign = null, $activeSection = 'basic')
     {
         $this->campaign = $campaign;
+        $this->activeSection = $activeSection;
     }
 
     public function render()
     {
-        return view('yandex_direct.campaigns.sidebar');
+        return view('yandex-direct::campaigns.partials.sidebar');
     }
 } 

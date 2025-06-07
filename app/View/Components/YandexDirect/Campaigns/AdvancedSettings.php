@@ -1,6 +1,6 @@
 <?php
 
-namespace App\View\Components\YandexDirect\Campaigns;
+namespace App\YandexDirect\Components\Campaigns;
 
 use Illuminate\View\Component;
 
@@ -19,6 +19,6 @@ class AdvancedSettings extends Component
 
     public function render()
     {
-        return view('yandex_direct.campaigns.advanced_settings');
+        return view('yandex-direct::campaigns.settings.advanced');
     }
 } 
