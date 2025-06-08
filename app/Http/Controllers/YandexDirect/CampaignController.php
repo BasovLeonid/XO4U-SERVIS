@@ -5,6 +5,7 @@ namespace App\Http\Controllers\YandexDirect;
 use App\Http\Controllers\Controller;
 use App\Models\YandexDirect\Campaign;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class CampaignController extends Controller
 {
@@ -45,21 +46,71 @@ class CampaignController extends Controller
         ]);
     }
 
-    public function update(Request $request, Campaign $campaign)
+    /**
+     * Обновление настроек кампании
+     *
+     * @param Request $request
+     * @param Campaign $campaign
+     * @return JsonResponse
+     */
+    public function update(Request $request, Campaign $campaign): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'status' => 'required|string',
-            'type' => 'required|string',
-            'settings' => 'required|array',
-            'content' => 'required|array'
-        ]);
+        try {
+            // Валидация входящих данных
+            $validated = $request->validate([
+                // Основные настройки
+                'name' => 'required|string|max:255',
+                'status' => 'required|in:active,paused,stopped',
+                'url' => 'required|url',
+                
+                // Бюджет
+                'daily_budget_amount' => 'required|numeric|min:0',
+                'daily_budget_mode' => 'required|in:STANDARD,DISTRIBUTED',
+                
+                // Стратегии
+                'search_bidding_strategy_type' => 'nullable|string',
+                'search_bidding_strategy' => 'nullable|array',
+                'network_bidding_strategy_type' => 'nullable|string',
+                'network_bidding_strategy' => 'nullable|array',
+                
+                // Места показа
+                'search_placement_types' => 'nullable|array',
+                'network_placement_types' => 'nullable|array',
+                
+                // Расписание
+                'time_targeting_schedule' => 'nullable|array',
+                'consider_working_weekends' => 'nullable|in:YES,NO',
+                
+                // Корректировки
+                'bid_adjustments' => 'nullable|array',
+                
+                // Ограничения
+                'negative_keywords' => 'nullable|array',
+                'excluded_sites' => 'nullable|array',
+                'blocked_ips' => 'nullable|array',
+                
+                // Дополнительные настройки
+                'tracking_params' => 'nullable|string',
+                'counter_ids' => 'nullable|array',
+                'goals' => 'nullable|array',
+            ]);
 
-        $campaign->update($validated);
+            // Обновление данных кампании
+            $campaign->update($validated);
 
-        return redirect()
-            ->route('yandex-direct.campaigns.edit', $campaign)
-            ->with('success', 'Кампания успешно обновлена');
+            // Подготовка ответа
+            return response()->json([
+                'success' => true,
+                'message' => 'Настройки кампании успешно обновлены',
+                'redirect' => route('yandex-direct.campaigns.show', $campaign)
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка при обновлении настроек: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function destroy(Campaign $campaign)

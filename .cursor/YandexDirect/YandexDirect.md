@@ -64,6 +64,12 @@ resources/
 ```
 
 
+## Структура хранения Базы данных Яндекс директ: .cursor/YandexDirect/YandexDiretcBDmapping.md
+
+
+
+
+
 Настройка компании/setting
 Расписание показов /schedule
 

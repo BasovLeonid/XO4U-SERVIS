@@ -3,11 +3,44 @@ description:
 globs: 
 alwaysApply: false
 ---
-# API и маршруты Яндекс.Директ
+# API Яндекс Директ
+
+## Версии API
+
+### Direct API v5
+Основная версия API находится в директории [Direct/](mdc:app/Services/YandexDirect/YandexDirectAPI/Direct)
+- API клиенты для работы с различными ресурсами
+- DTO объекты для передачи данных
+- Перечисления для констант
+- Исключения для обработки ошибок
+- Ресурсы API для работы с кампаниями, группами и объявлениями
+
+### Direct API v4
+Устаревшая версия API находится в директории [DirectV4/](mdc:app/Services/YandexDirect/YandexDirectAPI/DirectV4)
+- API клиенты для обратной совместимости
+- DTO объекты для v4
+- Ресурсы API для работы со старыми версиями
+
+## Конфигурация
+Основной конфигурационный файл: [yandex-direct.php](mdc:config/yandex-direct.php)
 
 ## Контроллеры
-- Контроллер разделов: [CampaignSectionController.php](mdc:app/Http/Controllers/YandexDirect/CampaignSectionController.php)
-- Контроллер данных: [CampaignDataController.php](mdc:app/Http/Controllers/YandexDirect/CampaignDataController.php)
+- CampaignController: [CampaignController.php](mdc:app/Http/Controllers/YandexDirect/CampaignController.php)
+- AdGroupController: [AdGroupController.php](mdc:app/Http/Controllers/YandexDirect/AdGroupController.php)
+- AdController: [AdController.php](mdc:app/Http/Controllers/YandexDirect/AdController.php)
+- SettingsController: [SettingsController.php](mdc:app/Http/Controllers/YandexDirect/SettingsController.php)
+- ApiController: [ApiController.php](mdc:app/Http/Controllers/YandexDirect/ApiController.php)
+
+## Модели
+- Campaign: [Campaign.php](mdc:app/Models/YandexDirect/Campaign.php)
+- AdGroup: [AdGroup.php](mdc:app/Models/YandexDirect/AdGroup.php)
+- Ad: [Ad.php](mdc:app/Models/YandexDirect/Ad.php)
+
+## Взаимодействие
+- Контроллеры обрабатывают HTTP запросы
+- Модели представляют данные из базы
+- API клиенты взаимодействуют с Яндекс Директ
+- DTO объекты обеспечивают типизацию данных
 
 ## Маршруты
 Основные маршруты определены в [YandexDirectServiceProvider.php](mdc:app/Providers/YandexDirectServiceProvider.php):
@@ -40,4 +73,5 @@ YandexDirect::updateSection($campaign, 'basic', $data);
 // Валидация данных
 $validation = YandexDirect::validateSection($campaign, 'basic', $data);
 ```
+
 

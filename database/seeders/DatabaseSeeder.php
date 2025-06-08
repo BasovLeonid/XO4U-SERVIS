@@ -23,7 +23,6 @@ class DatabaseSeeder extends Seeder
             TestUsersSeeder::class,
             SiteTemplateSeeder::class,
             TestTemplateSeeder::class,
-            DirectTemplatesCampaignSeeder::class,
         ]);
     }
 }

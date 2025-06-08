@@ -1,0 +1,47 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Миграции Яндекс Директ
+
+## Основные таблицы
+
+### Кампании
+Основная таблица кампаний находится в [direct_campaigns_table.php](mdc:database/migrations/2024_03_21_000001_create_direct_campaigns_table.php)
+
+### Стратегии показа
+- Поисковые стратегии: [direct_campaign_search_strategies_table.php](mdc:database/migrations/2024_03_21_000002_create_direct_campaign_search_strategies_table.php)
+- Сетевые стратегии: [direct_campaign_network_strategies_table.php](mdc:database/migrations/2024_03_21_000003_create_direct_campaign_network_strategies_table.php)
+
+### Метрики и расписание
+- Метрики: [direct_campaign_metrics_table.php](mdc:database/migrations/2024_03_21_000004_create_direct_campaign_metrics_table.php)
+- Расписание: [direct_campaign_schedules_table.php](mdc:database/migrations/2024_03_21_000005_create_direct_campaign_schedules_table.php)
+
+### Корректировки и исключения
+- Корректировки ставок: [direct_campaign_bid_adjustments_table.php](mdc:database/migrations/2024_03_21_000006_create_direct_campaign_bid_adjustments_table.php)
+- Минус-фразы: [direct_campaign_negative_keywords_table.php](mdc:database/migrations/2024_03_21_000007_create_direct_campaign_negative_keywords_table.php)
+- Исключения: [direct_campaign_exclusions_table.php](mdc:database/migrations/2024_03_21_000008_create_direct_campaign_exclusions_table.php)
+
+### Дополнительные настройки
+Дополнительные настройки кампании: [direct_campaign_settings_table.php](mdc:database/migrations/2024_03_21_000009_create_direct_campaign_settings_table.php)
+
+## Связи между таблицами
+
+Все таблицы связаны с основной таблицей кампаний через внешний ключ `direct_campaign_id` с каскадным удалением.
+
+## Технические поля
+
+Все таблицы содержат:
+- `id` - первичный ключ
+- `timestamps` - поля created_at и updated_at
+- `softDeletes` - поле deleted_at для мягкого удаления
+- `setting_param` - JSON поле для дополнительных настроек
+
+## Индексы
+
+Все таблицы имеют индексы для оптимизации поиска по:
+- `direct_campaign_id`
+- `yandex_campaign_id`
+- Специфичным полям (например, `attribution_model` в настройках)
+
