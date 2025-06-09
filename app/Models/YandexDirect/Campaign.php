@@ -5,6 +5,7 @@ namespace App\Models\YandexDirect;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Campaign extends Model
 {
@@ -21,7 +22,10 @@ class Campaign extends Model
         'restrictions',
         'corrections',
         'additional_settings',
-        'template_id'
+        'template_id',
+        'url',
+        'daily_budget_amount',
+        'daily_budget_mode'
     ];
 
     protected $casts = [
@@ -198,5 +202,70 @@ class Campaign extends Model
     public function importData($data)
     {
         // Реализация импорта
+    }
+
+    /**
+     * Получение настроек кампании
+     */
+    public function settings(): HasOne
+    {
+        return $this->hasOne(CampaignSetting::class);
+    }
+
+    /**
+     * Получение мест размещения
+     */
+    public function placements(): HasOne
+    {
+        return $this->hasOne(CampaignPlacement::class);
+    }
+
+    /**
+     * Получение расписания
+     */
+    public function schedule(): HasOne
+    {
+        return $this->hasOne(CampaignSchedule::class);
+    }
+
+    /**
+     * Получение корректировок
+     */
+    public function corrections(): HasOne
+    {
+        return $this->hasOne(CampaignCorrection::class);
+    }
+
+    /**
+     * Получение ограничений
+     */
+    public function restrictions(): HasOne
+    {
+        return $this->hasOne(CampaignRestriction::class);
+    }
+
+    /**
+     * Получение дополнительных настроек
+     */
+    public function additional(): HasOne
+    {
+        return $this->hasOne(CampaignAdditional::class);
+    }
+
+    /**
+     * Валидация данных
+     *
+     * @param array $data
+     * @return array
+     */
+    public static function validate(array $data): array
+    {
+        return validator($data, [
+            'name' => 'required|string|max:255',
+            'status' => 'required|in:active,paused,stopped',
+            'url' => 'required|url',
+            'daily_budget_amount' => 'required|numeric|min:0',
+            'daily_budget_mode' => 'required|in:STANDARD,DISTRIBUTED'
+        ])->validate();
     }
 } 

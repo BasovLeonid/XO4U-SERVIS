@@ -20,7 +20,7 @@
 
         <!-- Основной контент -->
         <div class="content">
-            <form action="{{ route('boss.direct-templates.campaigns.update', [$template, $campaign]) }}" method="POST" id="campaignSettingsForm">
+            <form action="{{ route('yandex-direct.campaigns.update-settings', $campaign) }}" method="POST" id="campaignSettingsForm">
                 @csrf
                 @method('PUT')
 
@@ -69,7 +69,7 @@
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-save me-2"></i>Сохранить изменения
                     </button>
-                    <a href="{{ route('boss.direct-templates.campaigns.show', [$template, $campaign]) }}" class="btn btn-outline-secondary">
+                    <a href="{{ route('yandex-direct.campaigns.settings', $campaign) }}" class="btn btn-outline-secondary">
                         <i class="fas fa-times me-2"></i>Отмена
                     </a>
                 </div>
@@ -81,7 +81,6 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Только общая обработка формы
     const form = document.getElementById('campaignSettingsForm');
     if (form) {
         form.addEventListener('submit', function(e) {

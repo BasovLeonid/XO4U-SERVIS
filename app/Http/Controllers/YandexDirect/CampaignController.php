@@ -2,48 +2,124 @@
 
 namespace App\Http\Controllers\YandexDirect;
 
-use App\Http\Controllers\Controller;
 use App\Models\YandexDirect\Campaign;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
-class CampaignController extends Controller
+class CampaignController extends BaseDirectController
 {
+    /**
+     * Отображение списка кампаний
+     *
+     * @return \Illuminate\View\View
+     */
     public function index()
     {
-        $campaigns = Campaign::paginate(10);
+        $campaigns = Campaign::with(['settings', 'placements', 'schedule', 'corrections', 'restrictions', 'additional'])
+            ->paginate(10);
         return view('yandex-direct.campaigns.index', compact('campaigns'));
     }
 
+    /**
+     * Отображение формы создания кампании
+     *
+     * @return \Illuminate\View\View
+     */
     public function create()
     {
         return view('yandex-direct.campaigns.create');
     }
 
+    /**
+     * Сохранение новой кампании
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'status' => 'required|string',
-            'type' => 'required|string',
-            'settings' => 'required|array',
-            'content' => 'required|array'
-        ]);
-
+        $validated = Campaign::validate($request->all());
         $campaign = Campaign::create($validated);
 
         return redirect()
-            ->route('yandex-direct.campaigns.edit', $campaign)
+            ->route('boss.direct-templates.campaigns.edit', $campaign)
             ->with('success', 'Кампания успешно создана');
     }
 
-    public function edit(Campaign $campaign)
+    /**
+     * Отображение кампании
+     *
+     * @param Campaign $campaign
+     * @return \Illuminate\View\View
+     */
+    public function show(Campaign $campaign)
     {
-        return view('yandex-direct.campaigns.edit', [
+        $campaign->load(['settings', 'placements', 'schedule', 'corrections', 'restrictions', 'additional']);
+        return view('yandex-direct.campaigns.show', compact('campaign'));
+    }
+
+    /**
+     * Отображение страницы настроек кампании
+     *
+     * @param Campaign $campaign
+     * @return \Illuminate\View\View
+     */
+    public function settings(Campaign $campaign)
+    {
+        $campaign->load(['settings', 'placements', 'schedule', 'corrections', 'restrictions', 'additional']);
+        return view('yandex-direct.campaigns.settings', [
             'campaign' => $campaign,
             'counters' => $this->getCounters(),
             'goals' => $this->getGoals()
         ]);
+    }
+
+    /**
+     * Отображение страницы расписания
+     *
+     * @param Campaign $campaign
+     * @return \Illuminate\View\View
+     */
+    public function schedule(Campaign $campaign)
+    {
+        $campaign->load('schedule');
+        return view('yandex-direct.campaigns.schedule', compact('campaign'));
+    }
+
+    /**
+     * Отображение страницы ограничений
+     *
+     * @param Campaign $campaign
+     * @return \Illuminate\View\View
+     */
+    public function restrictions(Campaign $campaign)
+    {
+        $campaign->load('restrictions');
+        return view('yandex-direct.campaigns.restrictions', compact('campaign'));
+    }
+
+    /**
+     * Отображение страницы корректировок
+     *
+     * @param Campaign $campaign
+     * @return \Illuminate\View\View
+     */
+    public function corrections(Campaign $campaign)
+    {
+        $campaign->load('corrections');
+        return view('yandex-direct.campaigns.corrections', compact('campaign'));
+    }
+
+    /**
+     * Отображение страницы дополнительных настроек
+     *
+     * @param Campaign $campaign
+     * @return \Illuminate\View\View
+     */
+    public function additionalSettings(Campaign $campaign)
+    {
+        $campaign->load('additional');
+        return view('yandex-direct.campaigns.additional-settings', compact('campaign'));
     }
 
     /**
@@ -53,84 +129,84 @@ class CampaignController extends Controller
      * @param Campaign $campaign
      * @return JsonResponse
      */
-    public function update(Request $request, Campaign $campaign): JsonResponse
+    public function updateSettings(Request $request, Campaign $campaign): JsonResponse
     {
-        try {
-            // Валидация входящих данных
-            $validated = $request->validate([
-                // Основные настройки
-                'name' => 'required|string|max:255',
-                'status' => 'required|in:active,paused,stopped',
-                'url' => 'required|url',
-                
-                // Бюджет
-                'daily_budget_amount' => 'required|numeric|min:0',
-                'daily_budget_mode' => 'required|in:STANDARD,DISTRIBUTED',
-                
-                // Стратегии
-                'search_bidding_strategy_type' => 'nullable|string',
-                'search_bidding_strategy' => 'nullable|array',
-                'network_bidding_strategy_type' => 'nullable|string',
-                'network_bidding_strategy' => 'nullable|array',
-                
-                // Места показа
-                'search_placement_types' => 'nullable|array',
-                'network_placement_types' => 'nullable|array',
-                
-                // Расписание
-                'time_targeting_schedule' => 'nullable|array',
-                'consider_working_weekends' => 'nullable|in:YES,NO',
-                
-                // Корректировки
-                'bid_adjustments' => 'nullable|array',
-                
-                // Ограничения
-                'negative_keywords' => 'nullable|array',
-                'excluded_sites' => 'nullable|array',
-                'blocked_ips' => 'nullable|array',
-                
-                // Дополнительные настройки
-                'tracking_params' => 'nullable|string',
-                'counter_ids' => 'nullable|array',
-                'goals' => 'nullable|array',
-            ]);
-
-            // Обновление данных кампании
-            $campaign->update($validated);
-
-            // Подготовка ответа
-            return response()->json([
-                'success' => true,
-                'message' => 'Настройки кампании успешно обновлены',
-                'redirect' => route('yandex-direct.campaigns.show', $campaign)
-            ]);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Ошибка при обновлении настроек: ' . $e->getMessage()
-            ], 500);
-        }
+        return $this->handleUpdate($request);
     }
 
+    /**
+     * Обновление отдельного раздела настроек
+     *
+     * @param Request $request
+     * @param Campaign $campaign
+     * @return JsonResponse
+     */
+    public function updateSection(Request $request, Campaign $campaign): JsonResponse
+    {
+        return $this->handleUpdate($request);
+    }
+
+    /**
+     * Удаление кампании
+     *
+     * @param Campaign $campaign
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function destroy(Campaign $campaign)
     {
         $campaign->delete();
 
         return redirect()
-            ->route('yandex-direct.campaigns.index')
+            ->route('boss.direct-templates.campaigns.index')
             ->with('success', 'Кампания успешно удалена');
     }
 
-    protected function getCounters()
+    /**
+     * Получение текущих данных кампании
+     *
+     * @return array
+     */
+    protected function getCurrentData(): array
     {
-        // TODO: Реализовать получение счетчиков из Яндекс.Метрики
+        $campaign = Campaign::with([
+            'settings',
+            'placements',
+            'schedule',
+            'corrections',
+            'restrictions',
+            'additional'
+        ])->find(request()->route('campaign'));
+
+        return array_merge(
+            $campaign->toArray(),
+            $campaign->settings->toArray(),
+            $campaign->placements->toArray(),
+            $campaign->schedule->toArray(),
+            $campaign->corrections->toArray(),
+            $campaign->restrictions->toArray(),
+            $campaign->additional->toArray()
+        );
+    }
+
+    /**
+     * Получение счетчиков Яндекс.Метрики
+     *
+     * @return array
+     */
+    protected function getCounters(): array
+    {
+        // TODO: Реализовать получение счетчиков
         return [];
     }
 
-    protected function getGoals()
+    /**
+     * Получение целей Яндекс.Метрики
+     *
+     * @return array
+     */
+    protected function getGoals(): array
     {
-        // TODO: Реализовать получение целей из Яндекс.Метрики
+        // TODO: Реализовать получение целей
         return [];
     }
 } 

@@ -4,16 +4,24 @@ namespace App\Http\Controllers\Boss;
 
 use App\Http\Controllers\Controller;
 use App\Models\DirectTemplate;
-use App\Models\DirectTemplatesCampaign;
+use App\Models\YandexDirect\DirectCampaign;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class DirectTemplateController extends Controller
 {
     public function index()
     {
-        $templates = DirectTemplate::with('campaigns')->get();
-        return view('boss.direct-templates.index', compact('templates'));
+        $templates = DirectTemplate::select('direct_templates.*')
+            ->leftJoin('direct_campaigns', 'direct_templates.id', '=', 'direct_campaigns.template_id')
+            ->select('direct_templates.*', DB::raw('COUNT(direct_campaigns.id) as campaigns_count'))
+            ->groupBy('direct_templates.id')
+            ->get();
+
+        $campaigns = DirectCampaign::whereIn('template_id', $templates->pluck('id'))->get();
+        
+        return view('boss.direct-templates.index', compact('templates', 'campaigns'));
     }
 
     public function create()
@@ -44,10 +52,7 @@ class DirectTemplateController extends Controller
 
     public function edit(DirectTemplate $direct_template)
     {
-        $template = $direct_template->load('campaigns');
-        $counters = []; // Загрузка счетчиков
-        $goals = []; // Загрузка целей
-        return view('boss.direct-templates.edit', compact('template', 'counters', 'goals'));
+        return view('boss.direct-templates.edit', compact('direct_template'));
     }
 
     public function update(Request $request, DirectTemplate $direct_template)
@@ -76,7 +81,7 @@ class DirectTemplateController extends Controller
 
     public function destroy(DirectTemplate $direct_template)
     {
-        if ($direct_template->campaigns()->exists()) {
+        if (DirectCampaign::where('template_id', $direct_template->id)->exists()) {
             return redirect()->route('boss.direct-templates.index')
                 ->with('error', 'Невозможно удалить шаблон, так как в нем есть кампании. Сначала удалите все кампании.');
         }

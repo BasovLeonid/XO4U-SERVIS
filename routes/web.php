@@ -22,6 +22,7 @@ use App\Http\Controllers\Boss\YandexDirectController;
 use App\Http\Controllers\Boss\YandexMetrikaController;
 use App\Http\Controllers\Boss\DirectTemplatesAdGroupController;
 use App\Http\Controllers\Boss\CampaignController;
+use App\Http\Controllers\YandexDirect\CampaignController as YandexDirectCampaignController;
 
 // Публичные маршруты
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -69,20 +70,20 @@ Route::middleware(['auth', 'verified'])->prefix('boss')->name('boss.')->group(fu
     // Маршруты для кампаний
     Route::prefix('direct-templates')->name('direct-templates.')->group(function () {
         Route::prefix('{template}/campaigns')->name('campaigns.')->group(function () {
-            Route::get('/', [DirectTemplatesCampaignController::class, 'index'])->name('index');
-            Route::get('/create', [DirectTemplatesCampaignController::class, 'create'])->name('create');
-            Route::post('/', [DirectTemplatesCampaignController::class, 'store'])->name('store');
-            Route::get('/{campaign}', [DirectTemplatesCampaignController::class, 'show'])->name('show');
-            Route::put('/{campaign}', [DirectTemplatesCampaignController::class, 'update'])->name('update');
-            Route::delete('/{campaign}', [DirectTemplatesCampaignController::class, 'destroy'])->name('destroy');
+            Route::get('/', [YandexDirectCampaignController::class, 'index'])->name('index');
+            Route::get('/create', [YandexDirectCampaignController::class, 'create'])->name('create');
+            Route::post('/', [YandexDirectCampaignController::class, 'store'])->name('store');
+            Route::get('/{campaign}', [YandexDirectCampaignController::class, 'show'])->name('show');
+            Route::put('/{campaign}', [YandexDirectCampaignController::class, 'update'])->name('update');
+            Route::delete('/{campaign}', [YandexDirectCampaignController::class, 'destroy'])->name('destroy');
             
             // Маршруты для разделов настроек кампании
-            Route::get('/{campaign}/settings', [DirectTemplatesCampaignController::class, 'settings'])->name('settings');
-            Route::get('/{campaign}/schedule', [DirectTemplatesCampaignController::class, 'schedule'])->name('schedule');
-            Route::get('/{campaign}/restrictions', [DirectTemplatesCampaignController::class, 'restrictions'])->name('restrictions');
-            Route::get('/{campaign}/corrections', [DirectTemplatesCampaignController::class, 'corrections'])->name('corrections');
-            Route::get('/{campaign}/additional-settings', [DirectTemplatesCampaignController::class, 'additionalSettings'])->name('additional-settings');
-            Route::post('/{campaign}/update-section', [DirectTemplatesCampaignController::class, 'updateSection'])->name('update-section');
+            Route::get('/{campaign}/settings', [YandexDirectCampaignController::class, 'settings'])->name('settings');
+            Route::get('/{campaign}/schedule', [YandexDirectCampaignController::class, 'schedule'])->name('schedule');
+            Route::get('/{campaign}/restrictions', [YandexDirectCampaignController::class, 'restrictions'])->name('restrictions');
+            Route::get('/{campaign}/corrections', [YandexDirectCampaignController::class, 'corrections'])->name('corrections');
+            Route::get('/{campaign}/additional-settings', [YandexDirectCampaignController::class, 'additionalSettings'])->name('additional-settings');
+            Route::post('/{campaign}/update-section', [YandexDirectCampaignController::class, 'updateSection'])->name('update-section');
             
             // Маршруты для групп объявлений
             Route::get('/{campaign}/ad-groups/create', [DirectTemplatesAdGroupController::class, 'create'])->name('ad-groups.create');
@@ -109,4 +110,13 @@ Route::middleware(['auth', 'verified'])->prefix('boss')->name('boss.')->group(fu
     // Лог ошибок
     Route::get('/logs', [LogController::class, 'index'])->name('logs.index');
     Route::get('/logs/{log}', [LogController::class, 'show'])->name('logs.show');
+});
+
+// Маршруты Яндекс.Директ
+Route::prefix('yandex-direct')->name('yandex-direct.')->group(function () {
+    // Кампании
+    Route::get('campaigns/{campaign}/settings', [YandexDirectCampaignController::class, 'settings'])
+        ->name('campaigns.settings');
+    Route::put('campaigns/{campaign}/settings', [YandexDirectCampaignController::class, 'updateSettings'])
+        ->name('campaigns.update-settings');
 });

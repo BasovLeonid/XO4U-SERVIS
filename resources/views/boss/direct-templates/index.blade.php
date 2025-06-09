@@ -55,16 +55,23 @@
                                         <td>{{ $template->strategy }}</td>
                                         <td>
                                             <div class="d-flex flex-column">
-                                                @foreach($template->campaigns as $campaign)
+                                                @php
+                                                    $templateCampaigns = $campaigns->where('template_id', $template->id);
+                                                @endphp
+                                                @forelse($templateCampaigns as $campaign)
                                                     <div class="mb-1">
-                                                        <a href="{{ route('boss.direct-templates.campaigns.settings', [$template, $campaign]) }}" class="text-decoration-none">
+                                                        <span class="text-muted">
                                                             <i class="fas fa-ad me-1"></i>{{ $campaign->name }}
-                                                        </a>
+                                                            @if($campaign->status)
+                                                                <span class="badge bg-{{ $campaign->status === 'active' ? 'success' : 'secondary' }}">
+                                                                    {{ $campaign->status }}
+                                                                </span>
+                                                            @endif
+                                                        </span>
                                                     </div>
-                                                @endforeach
-                                                <a href="{{ route('boss.direct-templates.campaigns.create', $template) }}" class="text-decoration-none">
-                                                    <i class="fas fa-plus me-1"></i>Новая кампания
-                                                </a>
+                                                @empty
+                                                    <span class="text-muted">Нет связанных кампаний</span>
+                                                @endforelse
                                             </div>
                                         </td>
                                         <td>

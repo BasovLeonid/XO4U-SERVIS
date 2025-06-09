@@ -24,6 +24,11 @@ class DirectTemplate extends Model
 
     public function campaigns()
     {
-        return $this->hasMany(DirectTemplatesCampaign::class, 'template_id');
+        return $this->hasMany(DirectTemplateCampaign::class, 'template_id');
+    }
+
+    public function directCampaigns()
+    {
+        return $this->hasMany(DirectCampaign::class, 'template_id');
     }
 } 
