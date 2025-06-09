@@ -79,10 +79,6 @@ Route::middleware(['auth', 'verified'])->prefix('boss')->name('boss.')->group(fu
             
             // Маршруты для разделов настроек кампании
             Route::get('/{campaign}/settings', [YandexDirectCampaignController::class, 'settings'])->name('settings');
-            Route::get('/{campaign}/schedule', [YandexDirectCampaignController::class, 'schedule'])->name('schedule');
-            Route::get('/{campaign}/restrictions', [YandexDirectCampaignController::class, 'restrictions'])->name('restrictions');
-            Route::get('/{campaign}/corrections', [YandexDirectCampaignController::class, 'corrections'])->name('corrections');
-            Route::get('/{campaign}/additional-settings', [YandexDirectCampaignController::class, 'additionalSettings'])->name('additional-settings');
             Route::post('/{campaign}/update-section', [YandexDirectCampaignController::class, 'updateSection'])->name('update-section');
             
             // Маршруты для групп объявлений

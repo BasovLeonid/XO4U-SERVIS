@@ -9,33 +9,10 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Campaign extends Model
 {
-    protected $table = 'direct_templates_campaigns';
+    protected $table = 'direct_campaigns';
+    protected $guarded = []; /*добавить все поля
 
-    protected $fillable = [
-        'name',
-        'status',
-        'type',
-        'budget',
-        'strategy',
-        'platforms',
-        'schedule',
-        'restrictions',
-        'corrections',
-        'additional_settings',
-        'template_id',
-        'url',
-        'daily_budget_amount',
-        'daily_budget_mode'
-    ];
-
-    protected $casts = [
-        'platforms' => 'array',
-        'schedule' => 'array',
-        'restrictions' => 'array',
-        'corrections' => 'array',
-        'additional_settings' => 'array'
-    ];
-
+    
     /**
      * Получить шаблон, к которому принадлежит кампания
      */

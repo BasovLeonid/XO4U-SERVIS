@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Boss;
 
 use App\Http\Controllers\Controller;
 use App\Models\DirectTemplate;
-use App\Models\YandexDirect\DirectCampaign;
+use App\Models\YandexDirect\Campaign;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
@@ -19,7 +19,7 @@ class DirectTemplateController extends Controller
             ->groupBy('direct_templates.id')
             ->get();
 
-        $campaigns = DirectCampaign::whereIn('template_id', $templates->pluck('id'))->get();
+        $campaigns = Campaign::whereIn('template_id', $templates->pluck('id'))->get();
         
         return view('boss.direct-templates.index', compact('templates', 'campaigns'));
     }

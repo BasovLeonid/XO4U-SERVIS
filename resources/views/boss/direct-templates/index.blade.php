@@ -63,7 +63,7 @@
                                                         <span class="text-muted">
                                                             <i class="fas fa-ad me-1"></i>{{ $campaign->name }}
                                                             @if($campaign->status)
-                                                                <span class="badge bg-{{ $campaign->status === 'active' ? 'success' : 'secondary' }}">
+                                                                <a href="{{ route('boss.direct-templates.campaigns.settings', ['campaign' => $campaign]) }}" class="badge bg-{{ $campaign->status === 'active' ? 'success' : 'secondary' }}">
                                                                     {{ $campaign->status }}
                                                                 </span>
                                                             @endif
