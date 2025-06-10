@@ -22,20 +22,13 @@
             <a href="#additional" class="nav-link">
                 <i class="fas fa-cogs me-2"></i>Параметры URL
             </a>
-            <a href="{{ route('boss.direct-templates.campaigns.ad-groups.create', [$campaign->template, $campaign]) }}" 
-               class="nav-link">
-                <i class="fas fa-plus me-2"></i>Добавить группу
-            </a>
         </div>
     </div>
 </div>
 
-@push('styles')
 <style>
 .sidebar-sticky {
-    position: sticky;
-    top: 1rem;
-    height: calc(100vh - 2rem);
+    height: 100%;
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: #dee2e6 #fff;
@@ -64,11 +57,11 @@
 
 .nav-pills .nav-link:hover {
     background-color: #f8f9fa;
-    color: #0d6efd;
+    color: var(--yandex-primary);
 }
 
 .nav-pills .nav-link.active {
-    background-color: #0d6efd;
+    background-color: var(--yandex-primary);
     color: #fff;
 }
 
@@ -79,21 +72,17 @@
 
 /* Стили для активного якоря */
 .nav-pills .nav-link[href*="#"]:target {
-    background-color: #0d6efd;
+    background-color: var(--yandex-primary);
     color: #fff;
 }
 
 @media (max-width: 768px) {
     .sidebar-sticky {
-        position: relative;
         height: auto;
-        top: 0;
     }
 }
 </style>
-@endpush
 
-@push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Получаем все ссылки с якорями
@@ -150,4 +139,3 @@ document.addEventListener('DOMContentLoaded', function() {
     updateActiveLink();
 });
 </script>
-@endpush

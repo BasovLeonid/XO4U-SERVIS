@@ -63,26 +63,11 @@ Route::middleware(['auth', 'verified'])->prefix('boss')->name('boss.')->group(fu
     Route::resource('site-templates', BossSiteTemplateController::class);
     
     // Шаблоны Яндекс.Директ
-    Route::get('direct-templates/additional-settings', [DirectTemplateController::class, 'additionalSettings'])
-        ->name('direct-templates.additional-settings');
     Route::resource('direct-templates', DirectTemplateController::class);
     
     // Маршруты для кампаний
     Route::prefix('direct-templates')->name('direct-templates.')->group(function () {
         Route::prefix('{template}/campaigns')->name('campaigns.')->group(function () {
-            Route::get('/', [YandexDirectCampaignController::class, 'index'])->name('index');
-            Route::get('/create', [YandexDirectCampaignController::class, 'create'])->name('create');
-            Route::post('/', [YandexDirectCampaignController::class, 'store'])->name('store');
-            Route::get('/{campaign}', [YandexDirectCampaignController::class, 'show'])->name('show');
-            Route::put('/{campaign}', [YandexDirectCampaignController::class, 'update'])->name('update');
-            Route::delete('/{campaign}', [YandexDirectCampaignController::class, 'destroy'])->name('destroy');
-            
-            // Маршруты для разделов настроек кампании
-            Route::get('/{campaign}/settings', [YandexDirectCampaignController::class, 'settings'])->name('settings');
-            Route::post('/{campaign}/update-section', [YandexDirectCampaignController::class, 'updateSection'])->name('update-section');
-            
-            // Маршруты для групп объявлений
-            Route::get('/{campaign}/ad-groups/create', [DirectTemplatesAdGroupController::class, 'create'])->name('ad-groups.create');
         });
     });
     
@@ -111,8 +96,30 @@ Route::middleware(['auth', 'verified'])->prefix('boss')->name('boss.')->group(fu
 // Маршруты Яндекс.Директ
 Route::prefix('yandex-direct')->name('yandex-direct.')->group(function () {
     // Кампании
-    Route::get('campaigns/{campaign}/settings', [YandexDirectCampaignController::class, 'settings'])
+    Route::get('campaigns/{campaign}/settings', [CampaignController::class, 'settings'])
         ->name('campaigns.settings');
-    Route::put('campaigns/{campaign}/settings', [YandexDirectCampaignController::class, 'updateSettings'])
+    Route::put('campaigns/{campaign}/settings', [CampaignController::class, 'updateSettings'])
         ->name('campaigns.update-settings');
 });
+
+// Маршруты интерфейсов
+Route::prefix('interface')->name('interface.')->group(function () {
+    // Маршруты Яндекс.Директ
+    Route::prefix('yandex-direct')->name('yandex-direct.')->group(function () {
+        Route::get('create', [YandexDirectCampaignController::class, 'create'])
+            ->name('create');
+        Route::get('{campaign}/settings', [YandexDirectCampaignController::class, 'settings'])
+            ->name('settings')
+            ->where('campaign', '[0-9]+');
+        Route::put('{campaign}/settings', [YandexDirectCampaignController::class, 'updateSettings'])
+            ->name('update-settings')
+            ->where('campaign', '[0-9]+');
+        Route::post('{campaign}/settings', [YandexDirectCampaignController::class, 'updateSettingsSection'])
+            ->name('update-settings-section')
+            ->where('campaign', '[0-9]+');
+        Route::delete('{campaign}', [YandexDirectCampaignController::class, 'destroy'])
+            ->name('destroy')
+            ->where('campaign', '[0-9]+');
+    });
+});
+

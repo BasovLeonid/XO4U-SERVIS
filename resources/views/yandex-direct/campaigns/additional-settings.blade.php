@@ -2,8 +2,6 @@
 <div class="mb-4">
     <div class="card">
         <div class="card-body">
-            <h6 class="mb-3">Параметры URL</h6>
-            
             <div class="mb-3">
                 <label for="tracking_params" class="form-label">Параметры URL</label>
                 <input type="text" class="form-control @error('tracking_params') is-invalid @enderror" 
@@ -22,9 +20,7 @@
 <!-- Модель атрибуции -->
 <div class="mb-4">
     <div class="card">
-        <div class="card-body">
-            <h6 class="mb-3">Модель атрибуции</h6>
-            
+        <div class="card-body">     
             <div class="mb-3">
                 <label for="attribution_model" class="form-label">Модель атрибуции</label>
                 <select class="form-select" id="attribution_model" name="AttributionModel" disabled>
@@ -127,7 +123,6 @@
     <div class="card">
         <div class="card-body">
             <h6 class="mb-3">Приоритизация объявлений</h6>
-            
             <div class="form-check mb-2">
                 <input class="form-check-input" type="radio" name="settings[CAMPAIGN_EXACT_PHRASE_MATCHING_ENABLED]" id="priority_best_metrics" 
                        value="YES" {{ old('settings.CAMPAIGN_EXACT_PHRASE_MATCHING_ENABLED', 'YES') == 'YES' ? 'checked' : '' }}>

@@ -44,7 +44,9 @@
                                             @if($template->image)
                                                 <img src="{{ Storage::url($template->image) }}" alt="{{ $template->name }}" class="img-thumbnail" style="max-width: 50px; margin-right: 10px;">
                                             @endif
-                                            {{ $template->name }}
+                                            <a href="{{ route('boss.direct-templates.show', $template) }}" class="text-decoration-none">
+                                                {{ $template->name }}
+                                            </a>
                                         </td>
                                         <td>{{ Str::limit($template->description, 100) }}</td>
                                         <td>
@@ -60,14 +62,14 @@
                                                 @endphp
                                                 @forelse($templateCampaigns as $campaign)
                                                     <div class="mb-1">
-                                                        <span class="text-muted">
+                                                        <a href="{{ route('interface.yandex-direct.settings', $campaign->id) }}?type=template&id_template={{ $template->id }}&back={{ urlencode(url()->current()) }}" class="text-decoration-none">
                                                             <i class="fas fa-ad me-1"></i>{{ $campaign->name }}
                                                             @if($campaign->status)
-                                                                <a href="{{ route('boss.direct-templates.campaigns.settings', ['campaign' => $campaign]) }}" class="badge bg-{{ $campaign->status === 'active' ? 'success' : 'secondary' }}">
+                                                                <span class="badge bg-{{ $campaign->status === 'active' ? 'success' : 'secondary' }}">
                                                                     {{ $campaign->status }}
                                                                 </span>
                                                             @endif
-                                                        </span>
+                                                        </a>
                                                     </div>
                                                 @empty
                                                     <span class="text-muted">Нет связанных кампаний</span>

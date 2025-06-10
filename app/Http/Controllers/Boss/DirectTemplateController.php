@@ -55,6 +55,15 @@ class DirectTemplateController extends Controller
         return view('boss.direct-templates.edit', compact('direct_template'));
     }
 
+    public function show(DirectTemplate $direct_template)
+    {
+        $campaigns = Campaign::where('template_id', $direct_template->id)->get();
+        return view('boss.direct-templates.show', [
+            'template' => $direct_template,
+            'campaigns' => $campaigns
+        ]);
+    }
+
     public function update(Request $request, DirectTemplate $direct_template)
     {
         $validated = $request->validate([

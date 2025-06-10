@@ -3,7 +3,6 @@
     <!-- Минус-фразы -->
     <div class="card mb-4">
         <div class="card-body">
-            <h6 class="mb-3">Минус-фразы</h6>
             <div class="mb-4">
                 <label class="form-label">Минус-фразы</label>
                 <div class="input-group mb-2">

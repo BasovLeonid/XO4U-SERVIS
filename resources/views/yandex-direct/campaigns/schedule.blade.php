@@ -3,7 +3,7 @@
         <h5 class="card-title mb-0">Расписание показов</h5>
     </div>
     <div class="card-body">
-        <form action="{{ route('boss.direct-templates.campaigns.update', [$template, $campaign]) }}" method="POST">
+        <form action="{{ route('interface.yandex-direct.update-settings', $campaign->id) }}" method="POST">
             @csrf
             @method('PUT')
 
@@ -201,7 +201,7 @@
 
             <div class="mt-4">
                 <button type="submit" class="btn btn-primary">Сохранить</button>
-                <a href="{{ route('boss.direct-templates.campaigns.settings', [$template, $campaign]) }}" class="btn btn-secondary">Отмена</a>
+                <a href="{{ route('interface.yandex-direct.settings', $campaign->id) }}?type=template&id_template={{ $campaign->template_id }}&back={{ urlencode(request()->get('back')) }}" class="btn btn-secondary">Отмена</a>
             </div>
         </form>
     </div>
