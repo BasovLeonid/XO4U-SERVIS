@@ -5,6 +5,7 @@ namespace App\Http\Controllers\YandexDirect;
 use App\Models\YandexDirect\Campaign;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 class CampaignController extends BaseDirectController
 {
@@ -183,88 +184,175 @@ class CampaignController extends BaseDirectController
      * @param Campaign $campaign
      * @return JsonResponse
      */
-    public function updateSettings(Request $request, Campaign $campaign): JsonResponse
-    {
+    public function updateSettings(Request $request, Campaign $campaign)
+    {   
+        //dd($request->all());
         try {
+            DB::beginTransaction();
+
             // Получаем все данные из запроса
             $data = $request->all();
             
-            // Обновляем основные данные кампании
+            // 1. Обновляем основные данные кампании (direct_campaigns)
             $campaign->update([
                 'name' => $data['name'] ?? $campaign->name,
                 'status' => $data['status'] ?? $campaign->status,
                 'url' => $data['url'] ?? $campaign->url,
                 'daily_budget_amount' => $data['daily_budget_amount'] ?? $campaign->daily_budget_amount,
                 'daily_budget_mode' => $data['daily_budget_mode'] ?? $campaign->daily_budget_mode,
+                'search_result' => $data['search_result'] ?? $campaign->search_result,
+                'dynamic_places' => $data['dynamic_places'] ?? $campaign->dynamic_places,
+                'product_gallery' => $data['product_gallery'] ?? $campaign->product_gallery,
+                'search_organization_list' => $data['search_organization_list'] ?? $campaign->search_organization_list,
+                'network' => $data['network'] ?? $campaign->network,
+                'maps' => $data['maps'] ?? $campaign->maps,
             ]);
 
-            // Обновляем настройки кампании
-            if ($campaign->settings) {
-                $campaign->settings->update([
-                    'search_bidding_strategy_type' => $data['search_bidding_strategy_type'] ?? $campaign->settings->search_bidding_strategy_type,
-                    'search_bidding_strategy' => $data['search_bidding_strategy'] ?? $campaign->settings->search_bidding_strategy,
-                    'network_bidding_strategy_type' => $data['network_bidding_strategy_type'] ?? $campaign->settings->network_bidding_strategy_type,
-                    'network_bidding_strategy' => $data['network_bidding_strategy'] ?? $campaign->settings->network_bidding_strategy,
+            // 2. Обновляем корректировки ставок (direct_campaign_bid_adjustments)
+            if ($campaign->bidAdjustments) {
+                $campaign->bidAdjustments->update([
+                    'mobile_adjustment' => $data['mobile_adjustment'] ?? $campaign->bidAdjustments->mobile_adjustment,
+                    'tablet_adjustment' => $data['tablet_adjustment'] ?? $campaign->bidAdjustments->tablet_adjustment,
+                    'desktop_adjustment' => $data['desktop_adjustment'] ?? $campaign->bidAdjustments->desktop_adjustment,
+                    'desktop_only_adjustment' => $data['desktop_only_adjustment'] ?? $campaign->bidAdjustments->desktop_only_adjustment,
+                    'demographics_adjustments' => $data['demographics_adjustments'] ?? $campaign->bidAdjustments->demographics_adjustments,
+                    'retargeting_adjustments' => $data['retargeting_adjustments'] ?? $campaign->bidAdjustments->retargeting_adjustments,
+                    'regional_adjustments' => $data['regional_adjustments'] ?? $campaign->bidAdjustments->regional_adjustments,
+                    'video_adjustment' => $data['video_adjustment'] ?? $campaign->bidAdjustments->video_adjustment,
+                    'smart_ad_adjustment' => $data['smart_ad_adjustment'] ?? $campaign->bidAdjustments->smart_ad_adjustment,
+                    'serp_layout_adjustments' => $data['serp_layout_adjustments'] ?? $campaign->bidAdjustments->serp_layout_adjustments,
+                    'income_grade_adjustments' => $data['income_grade_adjustments'] ?? $campaign->bidAdjustments->income_grade_adjustments,
+                    'ad_group_adjustment' => $data['ad_group_adjustment'] ?? $campaign->bidAdjustments->ad_group_adjustment,
                 ]);
             }
 
-            // Обновляем размещения
-            if ($campaign->placements) {
-                $campaign->placements->update([
-                    'search_placement_types' => $data['search_placement_types'] ?? $campaign->placements->search_placement_types,
-                    'network_placement_types' => $data['network_placement_types'] ?? $campaign->placements->network_placement_types,
+            // 3. Обновляем исключения (direct_campaign_exclusions)
+            if ($campaign->exclusions) {
+                $campaign->exclusions->update([
+                    'blocked_ips' => $data['blocked_ips'] ?? $campaign->exclusions->blocked_ips,
+                    'excluded_sites' => $data['excluded_sites'] ?? $campaign->exclusions->excluded_sites,
                 ]);
             }
 
-            // Обновляем расписание
+            // 4. Обновляем метрики (direct_campaign_metrics)
+            if ($campaign->metrics) {
+                $campaign->metrics->update([
+                    'counter_ids' => $data['counter_ids'] ?? $campaign->metrics->counter_ids,
+                    'primary_counter_id' => $data['primary_counter_id'] ?? $campaign->metrics->primary_counter_id,
+                    'priority_goals' => $data['priority_goals'] ?? $campaign->metrics->priority_goals,
+                    'primary_goal_id' => $data['primary_goal_id'] ?? $campaign->metrics->primary_goal_id,
+                    'primary_goal_value' => $data['primary_goal_value'] ?? $campaign->metrics->primary_goal_value,
+                ]);
+            }
+
+            // 5. Обновляем минус-слова (direct_campaign_negative_keywords)
+            if ($campaign->negativeKeywords) {
+                $campaign->negativeKeywords->update([
+                    'negative_keywords' => $data['negative_keywords'] ?? $campaign->negativeKeywords->negative_keywords,
+                ]);
+            }
+
+            // 6. Обновляем стратегии в сетях (direct_campaign_network_strategies)
+            if ($campaign->networkStrategies) {
+                $campaign->networkStrategies->update([
+                    'network_strategy_type' => $data['network_strategy_type'] ?? $campaign->networkStrategies->network_strategy_type,
+                    'network_wb_maximum_clicks_weekly_spend_limit' => $data['network_wb_maximum_clicks_weekly_spend_limit'] ?? $campaign->networkStrategies->network_wb_maximum_clicks_weekly_spend_limit,
+                    'network_wb_maximum_clicks_bid_ceiling' => $data['network_wb_maximum_clicks_bid_ceiling'] ?? $campaign->networkStrategies->network_wb_maximum_clicks_bid_ceiling,
+                    'network_average_cpc_average_cpc' => $data['network_average_cpc_average_cpc'] ?? $campaign->networkStrategies->network_average_cpc_average_cpc,
+                    'network_average_cpc_weekly_spend_limit' => $data['network_average_cpc_weekly_spend_limit'] ?? $campaign->networkStrategies->network_average_cpc_weekly_spend_limit,
+                    'network_wb_maximum_conversion_rate_weekly_spend_limit' => $data['network_wb_maximum_conversion_rate_weekly_spend_limit'] ?? $campaign->networkStrategies->network_wb_maximum_conversion_rate_weekly_spend_limit,
+                    'network_wb_maximum_conversion_rate_bid_ceiling' => $data['network_wb_maximum_conversion_rate_bid_ceiling'] ?? $campaign->networkStrategies->network_wb_maximum_conversion_rate_bid_ceiling,
+                    'network_wb_maximum_conversion_rate_goal_id' => $data['network_wb_maximum_conversion_rate_goal_id'] ?? $campaign->networkStrategies->network_wb_maximum_conversion_rate_goal_id,
+                    'network_average_cpa_weekly_spend_limit' => $data['network_average_cpa_weekly_spend_limit'] ?? $campaign->networkStrategies->network_average_cpa_weekly_spend_limit,
+                    'network_average_cpa_bid_ceiling' => $data['network_average_cpa_bid_ceiling'] ?? $campaign->networkStrategies->network_average_cpa_bid_ceiling,
+                    'network_average_cpa_exploration_budget' => $data['network_average_cpa_exploration_budget'] ?? $campaign->networkStrategies->network_average_cpa_exploration_budget,
+                    'network_average_cpa_goal_id' => $data['network_average_cpa_goal_id'] ?? $campaign->networkStrategies->network_average_cpa_goal_id,
+                    'network_average_cpa_average_cpa' => $data['network_average_cpa_average_cpa'] ?? $campaign->networkStrategies->network_average_cpa_average_cpa,
+                    'network_average_cpa_multiple_goals_weekly_spend_limit' => $data['network_average_cpa_multiple_goals_weekly_spend_limit'] ?? $campaign->networkStrategies->network_average_cpa_multiple_goals_weekly_spend_limit,
+                    'network_average_cpa_multiple_goals_bid_ceiling' => $data['network_average_cpa_multiple_goals_bid_ceiling'] ?? $campaign->networkStrategies->network_average_cpa_multiple_goals_bid_ceiling,
+                    'network_average_cpa_multiple_goals_exploration_budget' => $data['network_average_cpa_multiple_goals_exploration_budget'] ?? $campaign->networkStrategies->network_average_cpa_multiple_goals_exploration_budget,
+                    'network_average_cpa_multiple_goals_priority_goals' => $data['network_average_cpa_multiple_goals_priority_goals'] ?? $campaign->networkStrategies->network_average_cpa_multiple_goals_priority_goals,
+                    'network_pay_for_conversion_weekly_spend_limit' => $data['network_pay_for_conversion_weekly_spend_limit'] ?? $campaign->networkStrategies->network_pay_for_conversion_weekly_spend_limit,
+                    'network_pay_for_conversion_cpa' => $data['network_pay_for_conversion_cpa'] ?? $campaign->networkStrategies->network_pay_for_conversion_cpa,
+                    'network_pay_for_conversion_goal_id' => $data['network_pay_for_conversion_goal_id'] ?? $campaign->networkStrategies->network_pay_for_conversion_goal_id,
+                    'network_pay_for_conversion_multiple_goals_weekly_spend_limit' => $data['network_pay_for_conversion_multiple_goals_weekly_spend_limit'] ?? $campaign->networkStrategies->network_pay_for_conversion_multiple_goals_weekly_spend_limit,
+                    'network_pay_for_conversion_multiple_goals_priority_goals' => $data['network_pay_for_conversion_multiple_goals_priority_goals'] ?? $campaign->networkStrategies->network_pay_for_conversion_multiple_goals_priority_goals,
+                ]);
+            }
+
+            // 7. Обновляем расписание (direct_campaign_schedules)
             if ($campaign->schedule) {
                 $campaign->schedule->update([
-                    'time_targeting_schedule' => $data['time_targeting_schedule'] ?? $campaign->schedule->time_targeting_schedule,
+                    'start_date' => $data['start_date'] ?? $campaign->schedule->start_date,
+                    'end_date' => $data['end_date'] ?? $campaign->schedule->end_date,
+                    'time_zone' => $data['time_zone'] ?? $campaign->schedule->time_zone,
+                    'time_targeting_type' => $data['time_targeting_type'] ?? $campaign->schedule->time_targeting_type,
+                    'time_targeting_custom' => $data['time_targeting_custom'] ?? $campaign->schedule->time_targeting_custom,
+                    'time_targeting_budni' => $data['time_targeting_budni'] ?? $campaign->schedule->time_targeting_budni,
+                    'time_targeting_set1' => $data['time_targeting_set1'] ?? $campaign->schedule->time_targeting_set1,
+                    'time_targeting_set2' => $data['time_targeting_set2'] ?? $campaign->schedule->time_targeting_set2,
+                    'time_targeting_set3' => $data['time_targeting_set3'] ?? $campaign->schedule->time_targeting_set3,
                     'consider_working_weekends' => $data['consider_working_weekends'] ?? $campaign->schedule->consider_working_weekends,
+                    'holidays_schedule' => $data['holidays_schedule'] ?? $campaign->schedule->holidays_schedule,
                 ]);
             }
 
-            // Обновляем корректировки
-            if ($campaign->corrections) {
-                $campaign->corrections->update([
-                    'bid_adjustments' => $data['bid_adjustments'] ?? $campaign->corrections->bid_adjustments,
+            // 8. Обновляем стратегии поиска (direct_campaign_search_strategies)
+            if ($campaign->searchStrategies) {
+                $campaign->searchStrategies->update([
+                    'search_strategy_type' => $data['search_strategy_type'] ?? $campaign->searchStrategies->search_strategy_type,
+                    'search_wb_maximum_clicks_weekly_spend_limit' => $data['search_wb_maximum_clicks_weekly_spend_limit'] ?? $campaign->searchStrategies->search_wb_maximum_clicks_weekly_spend_limit,
+                    'search_wb_maximum_clicks_bid_ceiling' => $data['search_wb_maximum_clicks_bid_ceiling'] ?? $campaign->searchStrategies->search_wb_maximum_clicks_bid_ceiling,
+                    'search_average_cpc_average_cpc' => $data['search_average_cpc_average_cpc'] ?? $campaign->searchStrategies->search_average_cpc_average_cpc,
+                    'search_average_cpc_weekly_spend_limit' => $data['search_average_cpc_weekly_spend_limit'] ?? $campaign->searchStrategies->search_average_cpc_weekly_spend_limit,
+                    'search_wb_maximum_conversion_rate_weekly_spend_limit' => $data['search_wb_maximum_conversion_rate_weekly_spend_limit'] ?? $campaign->searchStrategies->search_wb_maximum_conversion_rate_weekly_spend_limit,
+                    'search_wb_maximum_conversion_rate_bid_ceiling' => $data['search_wb_maximum_conversion_rate_bid_ceiling'] ?? $campaign->searchStrategies->search_wb_maximum_conversion_rate_bid_ceiling,
+                    'search_wb_maximum_conversion_rate_goal_id' => $data['search_wb_maximum_conversion_rate_goal_id'] ?? $campaign->searchStrategies->search_wb_maximum_conversion_rate_goal_id,
+                    'search_average_cpa_weekly_spend_limit' => $data['search_average_cpa_weekly_spend_limit'] ?? $campaign->searchStrategies->search_average_cpa_weekly_spend_limit,
+                    'search_average_cpa_bid_ceiling' => $data['search_average_cpa_bid_ceiling'] ?? $campaign->searchStrategies->search_average_cpa_bid_ceiling,
+                    'search_average_cpa_exploration_budget' => $data['search_average_cpa_exploration_budget'] ?? $campaign->searchStrategies->search_average_cpa_exploration_budget,
+                    'search_average_cpa_goal_id' => $data['search_average_cpa_goal_id'] ?? $campaign->searchStrategies->search_average_cpa_goal_id,
+                    'search_average_cpa_average_cpa' => $data['search_average_cpa_average_cpa'] ?? $campaign->searchStrategies->search_average_cpa_average_cpa,
+                    'search_average_cpa_multiple_goals_weekly_spend_limit' => $data['search_average_cpa_multiple_goals_weekly_spend_limit'] ?? $campaign->searchStrategies->search_average_cpa_multiple_goals_weekly_spend_limit,
+                    'search_average_cpa_multiple_goals_bid_ceiling' => $data['search_average_cpa_multiple_goals_bid_ceiling'] ?? $campaign->searchStrategies->search_average_cpa_multiple_goals_bid_ceiling,
+                    'search_average_cpa_multiple_goals_exploration_budget' => $data['search_average_cpa_multiple_goals_exploration_budget'] ?? $campaign->searchStrategies->search_average_cpa_multiple_goals_exploration_budget,
+                    'search_average_cpa_multiple_goals_priority_goals' => $data['search_average_cpa_multiple_goals_priority_goals'] ?? $campaign->searchStrategies->search_average_cpa_multiple_goals_priority_goals,
+                    'search_pay_for_conversion_weekly_spend_limit' => $data['search_pay_for_conversion_weekly_spend_limit'] ?? $campaign->searchStrategies->search_pay_for_conversion_weekly_spend_limit,
+                    'search_pay_for_conversion_cpa' => $data['search_pay_for_conversion_cpa'] ?? $campaign->searchStrategies->search_pay_for_conversion_cpa,
+                    'search_pay_for_conversion_goal_id' => $data['search_pay_for_conversion_goal_id'] ?? $campaign->searchStrategies->search_pay_for_conversion_goal_id,
+                    'search_pay_for_conversion_multiple_goals_weekly_spend_limit' => $data['search_pay_for_conversion_multiple_goals_weekly_spend_limit'] ?? $campaign->searchStrategies->search_pay_for_conversion_multiple_goals_weekly_spend_limit,
+                    'search_pay_for_conversion_multiple_goals_priority_goals' => $data['search_pay_for_conversion_multiple_goals_priority_goals'] ?? $campaign->searchStrategies->search_pay_for_conversion_multiple_goals_priority_goals,
                 ]);
             }
 
-            // Обновляем ограничения
-            if ($campaign->restrictions) {
-                $campaign->restrictions->update([
-                    'negative_keywords' => $data['negative_keywords'] ?? $campaign->restrictions->negative_keywords,
-                    'excluded_sites' => $data['excluded_sites'] ?? $campaign->restrictions->excluded_sites,
-                    'blocked_ips' => $data['blocked_ips'] ?? $campaign->restrictions->blocked_ips,
+            // 9. Обновляем настройки кампании (direct_campaign_settings)
+            if ($campaign->settings) {
+                $campaign->settings->update([
+                    'tracking_params' => $data['tracking_params'] ?? $campaign->settings->tracking_params,
+                    'attribution_model' => $data['attribution_model'] ?? $campaign->settings->attribution_model,
+                    'add_metrica_tag' => $data['add_metrica_tag'] ?? $campaign->settings->add_metrica_tag,
+                    'add_openstat_tag' => $data['add_openstat_tag'] ?? $campaign->settings->add_openstat_tag,
+                    'add_to_favorites' => $data['add_to_favorites'] ?? $campaign->settings->add_to_favorites,
+                    'campaign_exact_phrase_matching_enabled' => $data['campaign_exact_phrase_matching_enabled'] ?? $campaign->settings->campaign_exact_phrase_matching_enabled,
+                    'enable_area_of_interest_targeting' => $data['enable_area_of_interest_targeting'] ?? $campaign->settings->enable_area_of_interest_targeting,
+                    'enable_company_info' => $data['enable_company_info'] ?? $campaign->settings->enable_company_info,
+                    'enable_extended_ad_title' => $data['enable_extended_ad_title'] ?? $campaign->settings->enable_extended_ad_title,
+                    'enable_site_monitoring' => $data['enable_site_monitoring'] ?? $campaign->settings->enable_site_monitoring,
+                    'exclude_paused_competing_ads' => $data['exclude_paused_competing_ads'] ?? $campaign->settings->exclude_paused_competing_ads,
+                    'maintain_network_cpc' => $data['maintain_network_cpc'] ?? $campaign->settings->maintain_network_cpc,
+                    'require_servicing' => $data['require_servicing'] ?? $campaign->settings->require_servicing,
+                    'shared_account_enabled' => $data['shared_account_enabled'] ?? $campaign->settings->shared_account_enabled,
+                    'alternative_texts_enabled' => $data['alternative_texts_enabled'] ?? $campaign->settings->alternative_texts_enabled,
                 ]);
             }
 
-            // Обновляем дополнительные настройки
-            if ($campaign->additional) {
-                $campaign->additional->update([
-                    'tracking_params' => $data['tracking_params'] ?? $campaign->additional->tracking_params,
-                    'counter_ids' => $data['counter_ids'] ?? $campaign->additional->counter_ids,
-                    'goals' => $data['goals'] ?? $campaign->additional->goals,
-                ]);
-            }
+            DB::commit();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Настройки кампании успешно обновлены',
-                'data' => [
-                    'campaign' => $campaign->fresh([
-                        'settings',
-                        'placements',
-                        'schedule',
-                        'corrections',
-                        'restrictions',
-                        'additional'
-                    ])
-                ]
-            ]);
+            return back()->with('success', 'Настройки кампании успешно обновлены');
 
         } catch (\Exception $e) {
+            DB::rollBack();
+
             \Log::error('Ошибка при обновлении настроек кампании: ' . $e->getMessage(), [
                 'campaign_id' => $campaign->id,
                 'data' => $request->all(),

@@ -7,6 +7,7 @@
     </style>
 </head>
 <body>
+<form id="saveForm1" action="{{ route('interface.yandex-direct.update-settings', ['campaign' => $campaign->id]) }}" method="POST" class="d-inline">
     <div class="yandex-direct-interface">
         <div class="interface-container">
             <!-- Боковая панель -->
@@ -18,13 +19,15 @@
             <div class="content">
                 <!-- Кнопки управления -->
                 <div class="close-button-container">
-                    <form id="saveForm" action="{{ route('interface.yandex-direct.update-settings', $campaign->id) }}" method="POST" class="d-inline">
+                    
                         @csrf
                         @method('PUT')
-                        <button type="submit" class="btn btn-primary btn-sm me-2" id="saveButton">
+                        <input type="hidden" name="yandex_campaign_id" value="{{ $campaign->yandex_campaign_id }}">
+                        <input type="hidden" name="direct_campaign_id" value="{{ $campaign->id }}">
+                        <button type="submit" class="btn btn-primary btn-sm me-2" id="saveButton1">
                             <i class="fas fa-save"></i> Сохранить
                         </button>
-                    </form>
+                    
                     <a href="{{ request()->get('back', str_replace('/campaigns/' . $campaign->id . '/settings', '', request()->url())) }}" 
                        class="btn btn-outline-secondary btn-sm" 
                        id="closeButton">
@@ -79,7 +82,7 @@
             </div>
         </div>
     </div>
-
+    </form>
     <!-- Подключаем скрипты из @push('scripts') -->
     @stack('scripts')
     

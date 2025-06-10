@@ -6,19 +6,67 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Campaign extends Model
 {
-    protected $table = 'direct_campaigns';
-    protected $guarded = []; /*добавить все поля
+    use SoftDeletes;
 
-    
+    protected $table = 'direct_campaigns';
+
+    protected $fillable = [
+        'type',
+        'template_id',
+        'user_id',
+        'account_id',
+        'url',
+        'summary',
+        'user_param',
+        'template_param',
+        'setting_param',
+        'name',
+        'yandex_campaign_id',
+        'status',
+        'daily_budget_amount',
+        'daily_budget_mode',
+        'search_result',
+        'dynamic_places',
+        'product_gallery',
+        'search_organization_list',
+        'network',
+        'maps'
+    ];
+
+    protected $casts = [
+        'summary' => 'array',
+        'user_param' => 'array',
+        'template_param' => 'array',
+        'setting_param' => 'array',
+        'daily_budget_amount' => 'decimal:6'
+    ];
+
     /**
      * Получить шаблон, к которому принадлежит кампания
      */
     public function template(): BelongsTo
     {
         return $this->belongsTo(Template::class, 'template_id');
+    }
+
+    /**
+     * Получить пользователя, которому принадлежит кампания
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Получить аккаунт, к которому принадлежит кампания
+     */
+    public function account(): BelongsTo
+    {
+        return $this->belongsTo(Account::class);
     }
 
     /**
@@ -78,6 +126,102 @@ class Campaign extends Model
     }
 
     /**
+     * Получить настройки кампании
+     */
+    public function settings(): HasOne
+    {
+        return $this->hasOne(CampaignSetting::class, 'direct_campaign_id');
+    }
+
+    /**
+     * Получить поисковую стратегию кампании
+     */
+    public function searchStrategies(): HasOne
+    {
+        return $this->hasOne(CampaignSearchStrategy::class, 'direct_campaign_id');
+    }
+
+    /**
+     * Получить модификаторы ставок кампании
+     */
+    public function bidAdjustments(): HasOne
+    {
+        return $this->hasOne(CampaignBidAdjustment::class, 'direct_campaign_id');
+    }
+
+    /**
+     * Получить исключения кампании
+     */
+    public function exclusions(): HasOne
+    {
+        return $this->hasOne(CampaignExclusion::class, 'direct_campaign_id');
+    }
+
+    /**
+     * Получить метрики кампании
+     */
+    public function metrics(): HasOne
+    {
+        return $this->hasOne(CampaignMetric::class, 'direct_campaign_id');
+    }
+
+    /**
+     * Получить минус-слова кампании
+     */
+    public function negativeKeywords(): HasOne
+    {
+        return $this->hasOne(CampaignNegativeKeyword::class, 'direct_campaign_id');
+    }
+
+    /**
+     * Получить сетевую стратегию кампании
+     */
+    public function networkStrategies(): HasOne
+    {
+        return $this->hasOne(CampaignNetworkStrategy::class, 'direct_campaign_id');
+    }
+
+    /**
+     * Получить расписание кампании
+     */
+    public function schedule(): HasOne
+    {
+        return $this->hasOne(CampaignSchedule::class, 'direct_campaign_id');
+    }
+
+    /**
+     * Получение мест размещения
+     */
+    public function placements(): HasOne
+    {
+        return $this->hasOne(CampaignPlacement::class);
+    }
+
+    /**
+     * Получение корректировок
+     */
+    public function corrections(): HasOne
+    {
+        return $this->hasOne(CampaignCorrection::class);
+    }
+
+    /**
+     * Получение ограничений
+     */
+    public function restrictions(): HasOne
+    {
+        return $this->hasOne(CampaignRestriction::class);
+    }
+
+    /**
+     * Получение дополнительных настроек
+     */
+    public function additional(): HasOne
+    {
+        return $this->hasOne(CampaignAdditional::class);
+    }
+
+    /**
      * Область видимости для активных кампаний
      */
     public function scopeActive($query)
@@ -125,124 +269,25 @@ class Campaign extends Model
         $this->attributes['schedule'] = json_encode($value);
     }
 
-    /**
-     * Валидация стратегии кампании
-     */
-    public function validateStrategy()
-    {
-        // Реализация валидации стратегии
-    }
 
-    /**
-     * Валидация платформ кампании
-     */
-    public function validatePlatforms()
-    {
-        // Реализация валидации платформ
-    }
+    
+     // Валидация данных
 
-    /**
-     * Валидация бюджета кампании
-     */
-    public function validateBudget()
-    {
-        // Реализация валидации бюджета
-    }
-
-    /**
-     * Получить статистику кампании
-     */
-    public function getStatistics()
-    {
-        // Реализация получения статистики
-    }
-
-    /**
-     * Синхронизация с Яндекс.Директ
-     */
-    public function syncWithYandex()
-    {
-        // Реализация синхронизации
-    }
-
-    /**
-     * Экспорт данных кампании
-     */
-    public function exportData()
-    {
-        // Реализация экспорта
-    }
-
-    /**
-     * Импорт данных кампании
-     */
-    public function importData($data)
-    {
-        // Реализация импорта
-    }
-
-    /**
-     * Получение настроек кампании
-     */
-    public function settings(): HasOne
-    {
-        return $this->hasOne(CampaignSetting::class);
-    }
-
-    /**
-     * Получение мест размещения
-     */
-    public function placements(): HasOne
-    {
-        return $this->hasOne(CampaignPlacement::class);
-    }
-
-    /**
-     * Получение расписания
-     */
-    public function schedule(): HasOne
-    {
-        return $this->hasOne(CampaignSchedule::class);
-    }
-
-    /**
-     * Получение корректировок
-     */
-    public function corrections(): HasOne
-    {
-        return $this->hasOne(CampaignCorrection::class);
-    }
-
-    /**
-     * Получение ограничений
-     */
-    public function restrictions(): HasOne
-    {
-        return $this->hasOne(CampaignRestriction::class);
-    }
-
-    /**
-     * Получение дополнительных настроек
-     */
-    public function additional(): HasOne
-    {
-        return $this->hasOne(CampaignAdditional::class);
-    }
-
-    /**
-     * Валидация данных
-     *
-     * @param array $data
-     * @return array
-     */
     public static function validate(array $data): array
     {
         return validator($data, [
             'name' => 'required|string|max:255',
-            'status' => 'required|in:active,paused,stopped',
+            'type' => 'required|string',
             'url' => 'required|url',
+            'status' => 'required|in:draft,active,paused,stopped',
             'daily_budget_amount' => 'required|numeric|min:0',
-            'daily_budget_mode' => 'required|in:STANDARD,DISTRIBUTED'
+            'daily_budget_mode' => 'required|in:STANDARD,DISTRIBUTED',
+            'search_result' => 'required|in:YES,NO',
+            'dynamic_places' => 'required|in:YES,NO',
+            'product_gallery' => 'required|in:YES,NO',
+            'search_organization_list' => 'required|in:YES,NO',
+            'network' => 'required|in:YES,NO',
+            'maps' => 'required|in:YES,NO'
         ])->validate();
     }
 } 

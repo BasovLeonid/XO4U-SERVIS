@@ -1,5 +1,6 @@
 @props(['campaign' => null, 'counters' => [], 'goals' => []])
 
+
 <div class="card mb-4">
     <div class="card-header bg-light">
         <h5 class="card-title mb-0">Места показа</h5>
@@ -7,19 +8,18 @@
     <div class="card-body">
         <h6 class="mb-3">Поиск</h6>
         <div class="form-check mb-3">
-            <input class="form-check-input platform-checkbox" type="checkbox" name="search_placement_types[SearchResults]" 
+            <input class="form-check-input platform-checkbox" type="checkbox" name="search_result" 
                    id="search_placement_types_SearchResults" value="YES" 
-                   {{ old('search_placement_types.SearchResults', $campaign?->search_placement_types['SearchResults'] ?? '') == 'YES' ? 'checked' : '' }}>
+                   {{ old('search_result', $campaign?->search_result) == 'YES' ? 'checked' : '' }}>
             <label class="form-check-label" for="search_placement_types_SearchResults">
                 Реклама в поисковой выдаче
                 <small class="d-block text-muted">Разместите свои объявления в специальных рекламных блоках на страницах результатов поиска</small>
             </label>
         </div>
-
         <div class="form-check mb-3">
-            <input class="form-check-input platform-checkbox" type="checkbox" name="search_placement_types[DynamicPlaces]" 
+            <input class="form-check-input platform-checkbox" type="checkbox" name="dynamic_places" 
                    id="search_placement_types_DynamicPlaces" value="YES" 
-                   {{ old('search_placement_types.DynamicPlaces', $campaign?->search_placement_types['DynamicPlaces'] ?? '') == 'YES' ? 'checked' : '' }}
+                   {{ old('dynamic_places', $campaign?->dynamic_places) == 'YES' ? 'checked' : '' }}
                    data-requires="search_placement_types_SearchResults">
             <label class="form-check-label" for="search_placement_types_DynamicPlaces">
                 Динамические места на поиске
@@ -28,9 +28,9 @@
         </div>
 
         <div class="form-check mb-3">
-            <input class="form-check-input platform-checkbox" type="checkbox" name="search_placement_types[ProductGallery]" 
+            <input class="form-check-input platform-checkbox" type="checkbox" name="product_gallery" 
                    id="search_placement_types_ProductGallery" value="YES" 
-                   {{ old('search_placement_types.ProductGallery', $campaign?->search_placement_types['ProductGallery'] ?? '') == 'YES' ? 'checked' : '' }}>
+                   {{ old('product_gallery', $campaign?->product_gallery) == 'YES' ? 'checked' : '' }}>
             <label class="form-check-label" for="search_placement_types_ProductGallery">
                 Товарная галерея на поиске
                 <small class="d-block text-muted">Покажите свои предложения в карусели товаров из разных магазинов, которая появляется над результатами поиска</small>
@@ -38,9 +38,9 @@
         </div>
 
         <div class="form-check mb-4">
-            <input class="form-check-input platform-checkbox" type="checkbox" name="search_placement_types[SearchOrganizationList]" 
+            <input class="form-check-input platform-checkbox" type="checkbox" name="search_organization_list" 
                    id="search_placement_types_SearchOrganizationList" value="YES" 
-                   {{ old('search_placement_types.SearchOrganizationList', $campaign?->search_placement_types['SearchOrganizationList'] ?? '') == 'YES' ? 'checked' : '' }}>
+                   {{ old('search_organization_list', $campaign?->search_organization_list) == 'YES' ? 'checked' : '' }}>
             <label class="form-check-label" for="search_placement_types_SearchOrganizationList">
                 Список организаций в результатах поиска
                 <small class="d-block text-muted">Станьте заметнее среди других организаций из Яндекс Бизнеса, которые появляются над результатами поиска</small>
@@ -49,9 +49,9 @@
 
         <h6 class="mb-3">Сети</h6>
         <div class="form-check mb-3">
-            <input class="form-check-input platform-checkbox" type="checkbox" name="network_placement_types[Network]" 
+            <input class="form-check-input platform-checkbox" type="checkbox" name="network" 
                    id="network_placement_types_Network" value="YES" 
-                   {{ old('network_placement_types.Network', $campaign?->network_placement_types['Network'] ?? '') == 'YES' ? 'checked' : '' }}>
+                   {{ old('network', $campaign?->network) == 'YES' ? 'checked' : '' }}>
             <label class="form-check-label" for="network_placement_types_Network">
                 Рекламная сеть Яндекса
                 <small class="d-block text-muted">Охватите посетителей десятков тысяч сайтов и приложений, которым могут быть интересны ваши товары и услуги</small>
@@ -59,9 +59,9 @@
         </div>
 
         <div class="form-check mb-3">
-            <input class="form-check-input platform-checkbox" type="checkbox" name="network_placement_types[Maps]" 
+            <input class="form-check-input platform-checkbox" type="checkbox" name="maps" 
                    id="network_placement_types_Maps" value="YES" 
-                   {{ old('network_placement_types.Maps', $campaign?->network_placement_types['Maps'] ?? '') == 'YES' ? 'checked' : '' }}>
+                   {{ old('maps', $campaign?->maps) == 'YES' ? 'checked' : '' }}>
             <label class="form-check-label" for="network_placement_types_Maps">
                 Яндекс Карты
                 <small class="d-block text-muted">Поднимитесь в поиске Карт и выделитесь среди других организаций благодаря зелёной метке</small>
@@ -69,7 +69,6 @@
         </div>
     </div>
 </div>
-
 <div class="card mb-4">
     <div class="card-header bg-light">
         <h5 class="card-title mb-0">Стратегия</h5>
@@ -82,11 +81,11 @@
                 <label for="search_bidding_strategy_type">Тип стратегии</label>
                 <select class="form-select" id="search_bidding_strategy_type" name="search_bidding_strategy_type">
                     <option value="">Выберите стратегию</option>
-                    <option value="HIGHEST_POSITION">Максимум кликов с ручными ставками</option>
-                    <option value="WB_MAXIMUM_CLICKS">Максимум кликов</option>
-                    <option value="AVERAGE_CPC">Максимум кликов по средней цене</option>
-                    <option value="WB_MAXIMUM_CONVERSION_RATE">Максимум конверсий</option>
-                    <option value="AVERAGE_CPA">Максимум конверсий по средней цене</option>
+                    <option @selected($campaign?->searchStrategy?->search_strategy_type == 'HIGHEST_POSITION') value="HIGHEST_POSITION">Максимум кликов с ручными ставками</option>
+                    <option @selected($campaign?->searchStrategy?->search_strategy_type == 'WB_MAXIMUM_CLICKS') value="WB_MAXIMUM_CLICKS">Максимум кликов</option>
+                    <option @selected($campaign?->searchStrategy?->search_strategy_type == 'AVERAGE_CPC') value="AVERAGE_CPC">Максимум кликов по средней цене</option>
+                    <option @selected($campaign?->searchStrategy?->search_strategy_type == 'WB_MAXIMUM_CONVERSION_RATE') value="WB_MAXIMUM_CONVERSION_RATE">Максимум конверсий</option>
+                    <option @selected($campaign?->searchStrategy?->search_strategy_type == 'AVERAGE_CPA') value="AVERAGE_CPA">Максимум конверсий по средней цене</option>
                     <option value="PAY_FOR_CONVERSION">Оплата за конверсии</option>
                 </select>
             </div>
@@ -112,7 +111,7 @@
                 <div class="strategy-params" data-strategy="WB_MAXIMUM_CLICKS" style="display: none;">
                     <div class="form-group mb-3">
                         <label for="search_bidding_strategy_weekly_spend_limit">Недельный бюджет (руб.)</label>
-                        <input type="number" class="form-control" id="search_bidding_strategy_weekly_spend_limit" name="search_bidding_strategy[WeeklySpendLimit]" step="0.01" min="0">
+                        <input value="{{ ceil($campaign?->searchStrategy?->search_wb_maximum_clicks_weekly_spend_limit)}}" type="number" class="form-control" id="search_bidding_strategy_weekly_spend_limit" name="search_bidding_strategy[WeeklySpendLimit]" step="0.01" min="0">
                     </div>
                     <div class="form-group mb-3">
                         <label for="search_bid_ceiling">Максимальная ставка (руб.)</label>
