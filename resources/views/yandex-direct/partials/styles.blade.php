@@ -281,4 +281,160 @@ body {
     .btn {
         width: 100%;
     }
+}
+
+/* Стили для расписания */
+.schedule-grid {
+    display: grid;
+    grid-template-columns: 60px repeat(24, 1fr);
+    border: 1px solid var(--yandex-border);
+    border-radius: 0.25rem;
+    overflow: hidden;
+    margin-top: 1rem;
+    width: 100%;
+}
+
+.schedule-header {
+    display: contents;
+}
+
+.schedule-row {
+    display: contents;
+}
+
+.day-label {
+    padding: 0.5rem;
+    text-align: center;
+    font-weight: 500;
+    background-color: var(--yandex-hover);
+    border-right: 1px solid var(--yandex-border);
+    cursor: pointer;
+    transition: background-color 0.2s;
+    position: sticky;
+    left: 0;
+    z-index: 1;
+}
+
+.day-label.active {
+    background-color: var(--yandex-primary);
+    color: white;
+}
+
+.hour-label {
+    padding: 0.5rem;
+    text-align: center;
+    font-size: 0.875rem;
+    background-color: var(--yandex-hover);
+    border-right: 1px solid var(--yandex-border);
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.hour-label.active {
+    background-color: var(--yandex-primary);
+    color: white;
+}
+
+.hour-cell {
+    padding: 0.5rem;
+    text-align: center;
+    cursor: pointer;
+    border-right: 1px solid var(--yandex-border);
+    border-bottom: 1px solid var(--yandex-border);
+    transition: background-color 0.2s;
+    min-width: 40px;
+}
+
+.hour-cell:last-child {
+    border-right: none;
+}
+
+.hour-cell.inactive {
+    background-color: #6c757d;
+    color: white;
+}
+
+.hour-cell:hover {
+    opacity: 0.8;
+}
+
+.bid-value {
+    font-size: 0.875rem;
+}
+
+/* Цвета для корректировок ставок */
+.bid-0 {
+    background-color: #6c757d;
+    color: white;
+}
+
+.bid-10 { background-color: #e8f5e9; }
+.bid-20 { background-color: #c8e6c9; }
+.bid-30 { background-color: #a5d6a7; }
+.bid-40 { background-color: #81c784; }
+.bid-50 { background-color: #66bb6a; }
+.bid-60 { background-color: #4caf50; }
+.bid-70 { background-color: #43a047; }
+.bid-80 { background-color: #388e3c; }
+.bid-90 { background-color: #2e7d32; }
+.bid-100 { background-color: #28a745; }
+
+.bid-110 { background-color: #fff9c4; }
+.bid-120 { background-color: #fff59d; }
+.bid-130 { background-color: #fff176; }
+.bid-140 { background-color: #ffee58; }
+.bid-150 { background-color: #ffeb3b; }
+
+.bid-160 { background-color: #ffcdd2; }
+.bid-170 { background-color: #ef9a9a; }
+.bid-180 { background-color: #e57373; }
+.bid-190 { background-color: #ef5350; }
+.bid-200 { background-color: #f44336; }
+
+/* Стили для корректировок ставок */
+#corrections-component .correction-value {
+    transition: all 0.3s;
+}
+
+#corrections-component .correction-value.negative {
+    background-color: rgba(255, 0, 0, 0.1);
+    border-color: #dc3545;
+}
+
+#corrections-component .correction-value.positive {
+    background-color: rgba(0, 255, 0, 0.1);
+    border-color: #28a745;
+}
+
+#corrections-component .table td {
+    vertical-align: middle;
+}
+
+#corrections-component .card {
+    transition: all 0.3s;
+}
+
+#corrections-component .card:hover {
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+#corrections-component .validation-error {
+    border-color: #dc3545;
+    background-color: rgba(220, 53, 69, 0.1);
+}
+
+#corrections-component .validation-error-message {
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+#corrections-component .alert-info {
+    background-color: #f8f9fa;
+    border-color: #e9ecef;
+    color: #495057;
+}
+
+#corrections-component .alert-info .alert-heading {
+    color: #0c5460;
 } 

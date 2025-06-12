@@ -1,9 +1,11 @@
+@props(['schedule' => null])
+
 <div class="card">
     <div class="card-header">
         <h5 class="card-title mb-0">Расписание показов</h5>
     </div>
     <div class="card-body">
-        <form action="{{ route('interface.yandex-direct.update-settings', $campaign->id) }}" method="POST">
+        <form action="{{ route('interface.yandex-direct.update-settings', $schedule->first()?->direct_campaign_id) }}" method="POST">
             @csrf
             @method('PUT')
 
@@ -18,7 +20,7 @@
                                    class="form-control @error('start_date') is-invalid @enderror" 
                                    id="start_date" 
                                    name="start_date" 
-                                   value="{{ old('start_date', $campaign->start_date ?? date('Y-m-d')) }}"
+                                   value="{{ old('start_date', $schedule->first()?->start_date ?? date('Y-m-d')) }}"
                                    min="{{ date('Y-m-d') }}"
                                    placeholder="{{ date('Y-m-d') }}"
                                    required>
@@ -35,7 +37,7 @@
                                    class="form-control @error('end_date') is-invalid @enderror" 
                                    id="end_date" 
                                    name="end_date" 
-                                   value="{{ old('end_date', $campaign->end_date) }}"
+                                   value="{{ old('end_date', $schedule->first()?->end_date) }}"
                                    min="{{ date('Y-m-d') }}">
                             @error('end_date')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -52,16 +54,16 @@
                 <!-- Режимы расписания -->
                 <div class="mb-3">
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="schedule_type" id="schedule_type_1" value="everyday" {{ old('schedule_type', $campaign->schedule_type ?? 'everyday') == 'everyday' ? 'checked' : '' }}>
-                        <label class="form-check-label" for="schedule_type_1">Каждый день, круглосуточно</label>
+                        <input class="form-check-input" type="radio" name="time_targeting_type" id="time_targeting_type_set1" value="set1" {{ old('time_targeting_type', $schedule->first()?->time_targeting_type ?? 'set1') == 'set1' ? 'checked' : '' }}>
+                        <label class="form-check-label" for="time_targeting_type_set1">Каждый день, круглосуточно</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="schedule_type" id="schedule_type_2" value="workdays" {{ old('schedule_type') == 'workdays' ? 'checked' : '' }}>
-                        <label class="form-check-label" for="schedule_type_2">По будням</label>
+                        <input class="form-check-input" type="radio" name="time_targeting_type" id="time_targeting_type_budni" value="budni" {{ old('time_targeting_type') == 'budni' ? 'checked' : '' }}>
+                        <label class="form-check-label" for="time_targeting_type_budni">По будням</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="schedule_type" id="schedule_type_3" value="custom" {{ old('schedule_type') == 'custom' ? 'checked' : '' }}>
-                        <label class="form-check-label" for="schedule_type_3">Почасовая настройка</label>
+                        <input class="form-check-input" type="radio" name="time_targeting_type" id="time_targeting_type_custom" value="custom" {{ old('time_targeting_type') == 'custom' ? 'checked' : '' }}>
+                        <label class="form-check-label" for="time_targeting_type_custom">Почасовая настройка</label>
                     </div>
                 </div>
 
@@ -141,7 +143,7 @@
                     <div class="mb-3">
                         <h6>В рабочие выходные</h6>
                         <select class="form-select" id="consider_working_weekends" name="consider_working_weekends">
-                            <option value="YES" {{ old('consider_working_weekends', $campaign->consider_working_weekends ?? 'YES') == 'YES' ? 'selected' : '' }}>
+                            <option value="YES" {{ old('consider_working_weekends', $schedule->first()?->consider_working_weekends ?? 'YES') == 'YES' ? 'selected' : '' }}>
                                 По расписанию рабочего дня, перенесенного на выходной
                             </option>
                             <option value="NO" {{ old('consider_working_weekends') == 'NO' ? 'selected' : '' }}>
@@ -155,41 +157,38 @@
 
                     <div class="mb-3">
                         <h6>Показы в праздничные дни</h6>
-                        <select class="form-select" id="holiday_show_type" name="holiday_show_type">
-                            <option value="schedule" {{ old('holiday_show_type', $campaign->holiday_show_type ?? 'schedule') == 'schedule' ? 'selected' : '' }}>
-                                По расписанию соответствующего дня недели
-                            </option>
-                            <option value="suspend" {{ old('holiday_show_type') == 'suspend' ? 'selected' : '' }}>
+                        <select class="form-select" id="holidays_schedule_suspend" name="holidays_schedule[suspend_on_holidays]">
+                            <option value="YES" {{ old('holidays_schedule.suspend_on_holidays', $schedule->first()?->holidays_schedule['suspend_on_holidays'] ?? 'YES') == 'YES' ? 'selected' : '' }}>
                                 Не показывать
                             </option>
-                            <option value="custom" {{ old('holiday_show_type') == 'custom' ? 'selected' : '' }}>
-                                Настроить интервал вручную
+                            <option value="NO" {{ old('holidays_schedule.suspend_on_holidays') == 'NO' ? 'selected' : '' }}>
+                                По расписанию соответствующего дня недели
                             </option>
                         </select>
 
                         <div id="holiday_settings" class="mt-3" style="display: none;">
                             <div class="row">
                                 <div class="col-md-4">
-                                    <label for="holiday_bid_percent" class="form-label">Коэффициент ставки</label>
-                                    <select class="form-select" id="holiday_bid_percent" name="holiday_bid_percent">
+                                    <label for="holidays_schedule_bid_percent" class="form-label">Коэффициент ставки</label>
+                                    <select class="form-select" id="holidays_schedule_bid_percent" name="holidays_schedule[bid_percent]">
                                         @for($i = 10; $i <= 200; $i += 10)
-                                            <option value="{{ $i }}" {{ old('holiday_bid_percent', $campaign->holiday_bid_percent ?? 100) == $i ? 'selected' : '' }}>{{ $i }}%</option>
+                                            <option value="{{ $i }}" {{ old('holidays_schedule.bid_percent', $schedule->first()?->holidays_schedule['bid_percent'] ?? 100) == $i ? 'selected' : '' }}>{{ $i }}%</option>
                                         @endfor
                                     </select>
                                 </div>
                                 <div class="col-md-4">
-                                    <label for="holiday_start_hour" class="form-label">Время начала</label>
-                                    <select class="form-select" id="holiday_start_hour" name="holiday_start_hour">
+                                    <label for="holidays_schedule_start_hour" class="form-label">Время начала</label>
+                                    <select class="form-select" id="holidays_schedule_start_hour" name="holidays_schedule[start_hour]">
                                         @for($i = 0; $i < 24; $i++)
-                                            <option value="{{ $i }}" {{ old('holiday_start_hour', $campaign->holiday_start_hour ?? 0) == $i ? 'selected' : '' }}>{{ $i }}:00</option>
+                                            <option value="{{ $i }}" {{ old('holidays_schedule.start_hour', $schedule->first()?->holidays_schedule['start_hour'] ?? 0) == $i ? 'selected' : '' }}>{{ $i }}:00</option>
                                         @endfor
                                     </select>
                                 </div>
                                 <div class="col-md-4">
-                                    <label for="holiday_end_hour" class="form-label">Время окончания</label>
-                                    <select class="form-select" id="holiday_end_hour" name="holiday_end_hour">
+                                    <label for="holidays_schedule_end_hour" class="form-label">Время окончания</label>
+                                    <select class="form-select" id="holidays_schedule_end_hour" name="holidays_schedule[end_hour]">
                                         @for($i = 1; $i <= 24; $i++)
-                                            <option value="{{ $i }}" {{ old('holiday_end_hour', $campaign->holiday_end_hour ?? 24) == $i ? 'selected' : '' }}>{{ $i }}:00</option>
+                                            <option value="{{ $i }}" {{ old('holidays_schedule.end_hour', $schedule->first()?->holidays_schedule['end_hour'] ?? 24) == $i ? 'selected' : '' }}>{{ $i }}:00</option>
                                         @endfor
                                     </select>
                                 </div>
@@ -198,233 +197,65 @@
                     </div>
                 </div>
             </div>
-
-            <div class="mt-4">
-                <button type="submit" class="btn btn-primary">Сохранить</button>
-                <a href="{{ route('interface.yandex-direct.settings', $campaign->id) }}?type=template&id_template={{ $campaign->template_id }}&back={{ urlencode(request()->get('back')) }}" class="btn btn-secondary">Отмена</a>
-            </div>
         </form>
     </div>
 </div>
-
-@push('styles')
-<style>
-.schedule-grid {
-    border: 1px solid #dee2e6;
-    border-radius: 0.25rem;
-    overflow: hidden;
-}
-
-.schedule-header {
-    display: flex;
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #dee2e6;
-}
-
-.schedule-row {
-    display: flex;
-    border-bottom: 1px solid #dee2e6;
-}
-
-.schedule-row:last-child {
-    border-bottom: none;
-}
-
-.day-label {
-    width: 60px;
-    padding: 0.5rem;
-    text-align: center;
-    font-weight: 500;
-    background-color: #f8f9fa;
-    border-right: 1px solid #dee2e6;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.day-label.active {
-    background-color: #28a745;
-    color: white;
-}
-
-.hour-label {
-    flex: 1;
-    padding: 0.5rem;
-    text-align: center;
-    font-size: 0.875rem;
-    border-right: 1px solid #dee2e6;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.hour-label.active {
-    background-color: #28a745;
-    color: white;
-}
-
-.hour-label:last-child {
-    border-right: none;
-}
-
-.hour-cell {
-    flex: 1;
-    padding: 0.5rem;
-    text-align: center;
-    cursor: pointer;
-    border-right: 1px solid #dee2e6;
-    transition: background-color 0.2s;
-}
-
-.hour-cell:last-child {
-    border-right: none;
-}
-
-.hour-cell.inactive {
-    background-color: #6c757d;
-    color: white;
-}
-
-.hour-cell:hover {
-    opacity: 0.8;
-}
-
-.bid-value {
-    font-size: 0.875rem;
-}
-
-/* Цвета для корректировок ставок */
-.bid-0 {
-    background-color: #6c757d;
-    color: white;
-}
-
-.bid-10 { background-color: #e8f5e9; }
-.bid-20 { background-color: #c8e6c9; }
-.bid-30 { background-color: #a5d6a7; }
-.bid-40 { background-color: #81c784; }
-.bid-50 { background-color: #66bb6a; }
-.bid-60 { background-color: #4caf50; }
-.bid-70 { background-color: #43a047; }
-.bid-80 { background-color: #388e3c; }
-.bid-90 { background-color: #2e7d32; }
-.bid-100 { background-color: #28a745; }
-
-.bid-110 { background-color: #fff9c4; }
-.bid-120 { background-color: #fff59d; }
-.bid-130 { background-color: #fff176; }
-.bid-140 { background-color: #ffee58; }
-.bid-150 { background-color: #ffeb3b; }
-
-.bid-160 { background-color: #ffcdd2; }
-.bid-170 { background-color: #ef9a9a; }
-.bid-180 { background-color: #e57373; }
-.bid-190 { background-color: #ef5350; }
-.bid-200 { background-color: #f44336; }
-
-/* Стили для выпадающего списка корректировок */
-#bid_adjustment_value option {
-    padding: 5px;
-}
-
-#bid_adjustment_value option[value="0"] {
-    background-color: #6c757d;
-    color: white;
-}
-
-#bid_adjustment_value option[value^="1"] {
-    background-color: #e8f5e9;
-}
-
-#bid_adjustment_value option[value^="2"] {
-    background-color: #c8e6c9;
-}
-
-#bid_adjustment_value option[value^="3"] {
-    background-color: #a5d6a7;
-}
-
-#bid_adjustment_value option[value^="4"] {
-    background-color: #81c784;
-}
-
-#bid_adjustment_value option[value^="5"] {
-    background-color: #66bb6a;
-}
-
-#bid_adjustment_value option[value^="6"] {
-    background-color: #4caf50;
-}
-
-#bid_adjustment_value option[value^="7"] {
-    background-color: #43a047;
-}
-
-#bid_adjustment_value option[value^="8"] {
-    background-color: #388e3c;
-}
-
-#bid_adjustment_value option[value^="9"] {
-    background-color: #2e7d32;
-}
-
-#bid_adjustment_value option[value="100"] {
-    background-color: #28a745;
-}
-
-#bid_adjustment_value option[value^="11"] {
-    background-color: #fff9c4;
-}
-
-#bid_adjustment_value option[value^="12"] {
-    background-color: #fff59d;
-}
-
-#bid_adjustment_value option[value^="13"] {
-    background-color: #fff176;
-}
-
-#bid_adjustment_value option[value^="14"] {
-    background-color: #ffee58;
-}
-
-#bid_adjustment_value option[value="150"] {
-    background-color: #ffeb3b;
-}
-
-#bid_adjustment_value option[value^="16"] {
-    background-color: #ffcdd2;
-}
-
-#bid_adjustment_value option[value^="17"] {
-    background-color: #ef9a9a;
-}
-
-#bid_adjustment_value option[value^="18"] {
-    background-color: #e57373;
-}
-
-#bid_adjustment_value option[value^="19"] {
-    background-color: #ef5350;
-}
-
-#bid_adjustment_value option[value="200"] {
-    background-color: #f44336;
-}
-</style>
-@endpush
 
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Обработка переключения режимов расписания
-    const scheduleTypes = document.querySelectorAll('input[name="schedule_type"]');
+    const scheduleTypes = document.querySelectorAll('input[name="time_targeting_type"]');
     const workdaysSettings = document.getElementById('workdays_settings');
     const customSchedule = document.getElementById('custom_schedule');
+    const commonSettings = document.querySelector('.mt-4');
+    const holidaySettings = document.getElementById('holiday_settings');
+    const holidaysScheduleSuspend = document.getElementById('holidays_schedule_suspend');
 
+    // Функция для управления видимостью полей
+    function updateFieldsVisibility(type) {
+        if (type === 'set1') {
+            // Скрываем все дополнительные настройки
+            workdaysSettings.style.display = 'none';
+            customSchedule.style.display = 'none';
+            commonSettings.style.display = 'none';
+        } else if (type === 'budni') {
+            // Показываем только настройки для будних дней
+            workdaysSettings.style.display = 'block';
+            customSchedule.style.display = 'none';
+            commonSettings.style.display = 'block';
+        } else if (type === 'custom') {
+            // Показываем почасовую настройку
+            workdaysSettings.style.display = 'none';
+            customSchedule.style.display = 'block';
+            commonSettings.style.display = 'block';
+        }
+    }
+
+    // Функция для управления видимостью настроек праздничных дней
+    function updateHolidaySettingsVisibility() {
+        if (holidaysScheduleSuspend.value === 'NO') {
+            holidaySettings.style.display = 'block';
+        } else {
+            holidaySettings.style.display = 'none';
+        }
+    }
+
+    // Инициализация при загрузке страницы
+    const selectedType = document.querySelector('input[name="time_targeting_type"]:checked').value;
+    updateFieldsVisibility(selectedType);
+    updateHolidaySettingsVisibility();
+
+    // Обработка переключения режимов
     scheduleTypes.forEach(type => {
         type.addEventListener('change', function() {
-            workdaysSettings.style.display = this.value === 'workdays' ? 'block' : 'none';
-            customSchedule.style.display = this.value === 'custom' ? 'block' : 'none';
+            updateFieldsVisibility(this.value);
         });
+    });
+
+    // Обработка переключения настроек праздничных дней
+    holidaysScheduleSuspend.addEventListener('change', function() {
+        updateHolidaySettingsVisibility();
     });
 
     // Обработка корректировки ставок
@@ -435,19 +266,6 @@ document.addEventListener('DOMContentLoaded', function() {
     enableBidAdjustment.addEventListener('change', function() {
         bidAdjustmentSettings.style.display = this.checked ? 'block' : 'none';
     });
-
-    // Обработка типа показа в праздничные дни
-    const holidayShowType = document.getElementById('holiday_show_type');
-    const holidaySettings = document.getElementById('holiday_settings');
-
-    holidayShowType.addEventListener('change', function() {
-        holidaySettings.style.display = this.value === 'custom' ? 'block' : 'none';
-    });
-
-    // Инициализация видимости настроек праздничных дней
-    if (holidayShowType.value === 'custom') {
-        holidaySettings.style.display = 'block';
-    }
 
     // Функция для обновления цвета ячейки
     function updateCellColor(cell, value) {

@@ -208,10 +208,11 @@ class Campaign extends Model
     /**
      * Получение ограничений
      */
-    public function restrictions(): HasOne
-    {
-        return $this->hasOne(CampaignRestriction::class);
-    }
+     
+    //public function restrictions(): HasOne
+    //{
+    //    return $this->hasOne(CampaignRestriction::class);
+    //}
 
     /**
      * Получение дополнительных настроек

@@ -16,8 +16,11 @@
             <a href="#corrections" class="nav-link">
                 <i class="fas fa-sliders-h me-2"></i>Корректировки ставок
             </a>
-            <a href="#restrictions" class="nav-link">
-                <i class="fas fa-ban me-2"></i>Минус-фразы
+            <a href="#negative_keywords" class="nav-link">
+                <i class="fas fa-minus-circle me-2"></i>Минус слова
+            </a>
+            <a href="#exclusions" class="nav-link">
+                <i class="fas fa-globe me-2"></i>Площадки
             </a>
             <a href="#additional" class="nav-link">
                 <i class="fas fa-cogs me-2"></i>Параметры URL
